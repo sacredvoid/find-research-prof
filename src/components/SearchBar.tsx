@@ -26,26 +26,25 @@ export default function SearchBar({
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
-      <div className="flex gap-4 mb-3 text-sm">
+      <div className="flex gap-1 mb-3 text-sm">
         <button
           type="button"
           onClick={() => setType("topic")}
-          className={`transition-colors ${
+          className={`px-3 py-1 rounded-full transition-all ${
             type === "topic"
-              ? "text-ink font-medium"
-              : "text-ink-tertiary hover:text-ink-secondary"
+              ? "bg-accent text-white font-medium"
+              : "text-ink-tertiary hover:text-ink-secondary hover:bg-paper-elevated"
           }`}
         >
           Search by topic
         </button>
-        <span className="text-ink-muted">|</span>
         <button
           type="button"
           onClick={() => setType("name")}
-          className={`transition-colors ${
+          className={`px-3 py-1 rounded-full transition-all ${
             type === "name"
-              ? "text-ink font-medium"
-              : "text-ink-tertiary hover:text-ink-secondary"
+              ? "bg-accent text-white font-medium"
+              : "text-ink-tertiary hover:text-ink-secondary hover:bg-paper-elevated"
           }`}
         >
           Search by name
@@ -61,13 +60,13 @@ export default function SearchBar({
               ? "e.g. computational neuroscience, gene therapy, climate modeling..."
               : "e.g. Geoffrey Hinton, Jennifer Doudna..."
           }
-          className={`w-full bg-paper-inset border border-rule rounded text-ink placeholder-ink-tertiary focus:outline-none focus:border-rule-strong focus:ring-1 focus:ring-rule-strong transition-colors ${
+          className={`w-full bg-paper-inset border border-rule rounded-lg text-ink placeholder-ink-tertiary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent-border transition-all ${
             isLarge ? "px-5 py-4 text-lg" : "px-4 py-2.5 text-base"
           }`}
         />
         <button
           type="submit"
-          className={`absolute right-2 text-ink-secondary hover:text-ink transition-colors ${
+          className={`absolute right-2 text-accent hover:text-accent-hover transition-colors ${
             isLarge ? "top-3 px-4 py-1.5" : "top-1.5 px-3 py-1"
           }`}
           aria-label="Search"

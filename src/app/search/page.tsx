@@ -183,18 +183,18 @@ export default async function SearchPage({
                 {page > 1 && (
                   <Link
                     href={buildFilterUrl({ page: (page - 1).toString() })}
-                    className="text-link hover:text-link-hover transition-colors"
+                    className="text-accent hover:text-accent-hover bg-accent-bg hover:bg-accent-border px-3 py-1.5 rounded-md font-medium transition-all"
                   >
                     &larr; Previous
                   </Link>
                 )}
-                <span className="text-ink-tertiary font-mono text-xs">
+                <span className="text-ink-tertiary font-mono text-xs px-2">
                   page {page}
                 </span>
                 {professors.length === 25 && (
                   <Link
                     href={buildFilterUrl({ page: (page + 1).toString() })}
-                    className="text-link hover:text-link-hover transition-colors"
+                    className="text-accent hover:text-accent-hover bg-accent-bg hover:bg-accent-border px-3 py-1.5 rounded-md font-medium transition-all"
                   >
                     Next &rarr;
                   </Link>
@@ -237,10 +237,10 @@ function FilterLink({
   return (
     <Link
       href={href}
-      className={`block text-sm py-0.5 transition-colors ${
+      className={`block text-sm py-1 px-2 rounded transition-all ${
         active
-          ? "text-ink font-medium"
-          : "text-ink-tertiary hover:text-ink-secondary"
+          ? "text-accent font-medium bg-accent-bg"
+          : "text-ink-tertiary hover:text-ink-secondary hover:bg-paper-elevated"
       }`}
     >
       {children}

@@ -40,27 +40,25 @@ export default function PublicationFilters({
 
   return (
     <div className="flex flex-wrap items-center gap-4 text-sm">
-      <div className="flex gap-3">
-        {SORT_OPTIONS.map((opt, i) => (
-          <span key={opt.value} className="flex items-center gap-3">
-            {i > 0 && <span className="text-ink-muted">·</span>}
-            <button
-              onClick={() => navigate("sort", opt.value === "recent" ? "" : opt.value)}
-              className={`transition-colors ${
-                currentSort === opt.value
-                  ? "text-ink font-medium"
-                  : "text-ink-tertiary hover:text-ink-secondary"
-              }`}
-            >
-              {opt.label}
-            </button>
-          </span>
+      <div className="flex gap-1">
+        {SORT_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => navigate("sort", opt.value === "recent" ? "" : opt.value)}
+            className={`px-2.5 py-1 rounded-md transition-all ${
+              currentSort === opt.value
+                ? "text-accent font-medium bg-accent-bg"
+                : "text-ink-tertiary hover:text-ink-secondary hover:bg-paper-elevated"
+            }`}
+          >
+            {opt.label}
+          </button>
         ))}
       </div>
       <select
         value={currentYear}
         onChange={(e) => navigate("year", e.target.value)}
-        className="text-sm bg-paper-inset border border-rule rounded px-2 py-1 text-ink-secondary focus:outline-none focus:border-rule-strong"
+        className="text-sm bg-paper-inset border border-rule rounded-md px-2.5 py-1 text-ink-secondary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent-border transition-all"
       >
         {YEAR_OPTIONS.map((opt) => (
           <option key={opt.value} value={opt.value}>

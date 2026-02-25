@@ -11,11 +11,11 @@ export default function ProfessorCard({ professor }: { professor: Professor }) {
   return (
     <Link
       href={`/professor/${professor.id}`}
-      className="block py-5 border-b border-rule hover:bg-paper-elevated transition-colors -mx-3 px-3 rounded"
+      className="group block py-5 border-b border-rule hover:bg-accent-bg transition-all -mx-3 px-3 rounded-md"
     >
       <div className="flex justify-between items-baseline gap-6">
         <div className="min-w-0">
-          <h3 className="font-semibold text-ink tracking-tight text-[1.05rem] leading-snug">
+          <h3 className="font-semibold text-ink tracking-tight text-[1.05rem] leading-snug group-hover:text-accent transition-colors">
             {professor.name}
           </h3>
           <p className="text-ink-secondary text-sm mt-0.5">

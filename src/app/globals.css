@@ -10,13 +10,19 @@
   --color-ink-tertiary: #A8A29E;
   --color-ink-muted: #D6D3D1;
 
-  --color-link: #2B5EA7;
-  --color-link-hover: #1E4A82;
-  --color-gold: #92400E;
-  --color-gold-muted: #B4570F;
+  --color-link: #2563EB;
+  --color-link-hover: #1D4ED8;
+  --color-link-bg: #EFF6FF;
+  --color-gold: #B45309;
+  --color-gold-muted: #D97706;
   --color-gold-bg: #FFFBEB;
 
-  --color-oa: #15803D;
+  --color-accent: #2563EB;
+  --color-accent-hover: #1D4ED8;
+  --color-accent-bg: #EFF6FF;
+  --color-accent-border: #BFDBFE;
+
+  --color-oa: #16A34A;
   --color-oa-bg: #F0FDF4;
 
   --color-rule: #E7E5E0;

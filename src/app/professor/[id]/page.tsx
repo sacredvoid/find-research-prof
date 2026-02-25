@@ -99,7 +99,7 @@ export default async function ProfessorPage({
         </div>
 
         {/* External links */}
-        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+        <div className="mt-4 flex flex-wrap gap-2 text-sm">
           <ExtLink href={author.id}>OpenAlex</ExtLink>
           {orcidUrl && <ExtLink href={orcidUrl}>ORCID</ExtLink>}
           <ExtLink
@@ -171,9 +171,9 @@ export default async function ProfessorPage({
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <span>
+    <span className="bg-gold-bg px-2.5 py-1 rounded-md">
       <span className="text-gold font-semibold">{value}</span>
-      <span className="text-ink-tertiary font-sans text-xs ml-1">{label}</span>
+      <span className="text-gold-muted font-sans text-xs ml-1">{label}</span>
     </span>
   );
 }
@@ -184,10 +184,10 @@ function ExtLink({ href, children }: { href: string; children: React.ReactNode }
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-link hover:text-link-hover transition-colors"
+      className="inline-flex items-center gap-1 text-accent bg-accent-bg hover:bg-accent-border px-2.5 py-1 rounded-md font-medium transition-all"
     >
       {children}
-      <span className="text-ink-muted ml-0.5">↗</span>
+      <span className="text-accent/50">↗</span>
     </a>
   );
 }
@@ -215,7 +215,7 @@ function WorkEntry({ work }: { work: OpenAlexWork }) {
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-ink hover:text-link transition-colors leading-snug"
+              className="text-ink hover:text-accent transition-colors leading-snug"
             >
               {work.title || "Untitled"}
             </a>
@@ -229,10 +229,9 @@ function WorkEntry({ work }: { work: OpenAlexWork }) {
             {journal && work.publication_year && <span>·</span>}
             {work.publication_year && <span>{work.publication_year}</span>}
             {work.open_access?.is_oa && (
-              <>
-                <span>·</span>
-                <span className="text-oa">Open Access</span>
-              </>
+              <span className="text-oa bg-oa-bg px-1.5 py-0.5 rounded text-xs font-medium">
+                Open Access
+              </span>
             )}
           </div>
         </div>
