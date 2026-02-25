@@ -26,25 +26,26 @@ export default function SearchBar({
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
-      <div className="flex gap-2 mb-3">
+      <div className="flex gap-4 mb-3 text-sm">
         <button
           type="button"
           onClick={() => setType("topic")}
-          className={`text-sm px-3 py-1 rounded-full transition-colors ${
+          className={`transition-colors ${
             type === "topic"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "text-ink font-medium"
+              : "text-ink-tertiary hover:text-ink-secondary"
           }`}
         >
           Search by topic
         </button>
+        <span className="text-ink-muted">|</span>
         <button
           type="button"
           onClick={() => setType("name")}
-          className={`text-sm px-3 py-1 rounded-full transition-colors ${
+          className={`transition-colors ${
             type === "name"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "text-ink font-medium"
+              : "text-ink-tertiary hover:text-ink-secondary"
           }`}
         >
           Search by name
@@ -57,20 +58,32 @@ export default function SearchBar({
           onChange={(e) => setQuery(e.target.value)}
           placeholder={
             type === "topic"
-              ? 'Search a research topic... e.g. "computational neuroscience"'
-              : 'Search a professor name... e.g. "Geoffrey Hinton"'
+              ? "e.g. computational neuroscience, gene therapy, climate modeling..."
+              : "e.g. Geoffrey Hinton, Jennifer Doudna..."
           }
-          className={`w-full border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          className={`w-full bg-paper-inset border border-rule rounded text-ink placeholder-ink-tertiary focus:outline-none focus:border-rule-strong focus:ring-1 focus:ring-rule-strong transition-colors ${
             isLarge ? "px-5 py-4 text-lg" : "px-4 py-2.5 text-base"
           }`}
         />
         <button
           type="submit"
-          className={`absolute right-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors ${
-            isLarge ? "top-2 px-6 py-2 text-base" : "top-1 px-4 py-1.5 text-sm"
+          className={`absolute right-2 text-ink-secondary hover:text-ink transition-colors ${
+            isLarge ? "top-3 px-4 py-1.5" : "top-1.5 px-3 py-1"
           }`}
+          aria-label="Search"
         >
-          Search
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className={isLarge ? "w-5 h-5" : "w-4 h-4"}
+          >
+            <path
+              fillRule="evenodd"
+              d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+              clipRule="evenodd"
+            />
+          </svg>
         </button>
       </div>
     </form>

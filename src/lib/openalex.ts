@@ -185,11 +185,26 @@ export async function getAuthor(id: string): Promise<OpenAlexAuthor> {
 
 export async function getAuthorWorks(
   authorId: string,
-  perPage: number = 10
+  options: {
+    perPage?: number;
+    sort?: "recent" | "cited" | "oldest";
+    year?: string;
+  } = {}
 ): Promise<OpenAlexWork[]> {
+  const { perPage = 15, sort = "recent", year } = options;
+
+  const filterParts: string[] = [`authorships.author.id:${authorId}`];
+  if (year) filterParts.push(`publication_year:${year}`);
+
+  const sortMap = {
+    recent: "publication_date:desc",
+    cited: "cited_by_count:desc",
+    oldest: "publication_date:asc",
+  };
+
   const res = await fetchOpenAlex<{ results: OpenAlexWork[] }>("/works", {
-    filter: `authorships.author.id:${authorId}`,
-    sort: "publication_date:desc",
+    filter: filterParts.join(","),
+    sort: sortMap[sort],
     per_page: perPage.toString(),
   });
   return res.results;

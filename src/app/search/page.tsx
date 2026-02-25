@@ -30,9 +30,9 @@ export default async function SearchPage({
 
   if (!query) {
     return (
-      <main className="max-w-6xl mx-auto px-4 py-12">
+      <main className="max-w-[52rem] mx-auto px-6 py-12">
         <SearchBar />
-        <p className="text-center text-gray-400 mt-8">
+        <p className="text-center text-ink-tertiary mt-8 text-sm">
           Enter a search query to find professors.
         </p>
       </main>
@@ -69,18 +69,18 @@ export default async function SearchPage({
   ];
 
   const CITATION_OPTIONS = [
-    { value: "", label: "Any citations" },
-    { value: "100", label: "100+ citations" },
-    { value: "1000", label: "1,000+ citations" },
-    { value: "5000", label: "5,000+ citations" },
-    { value: "10000", label: "10,000+ citations" },
-    { value: "50000", label: "50,000+ citations" },
+    { value: "", label: "Any" },
+    { value: "100", label: "100+" },
+    { value: "1000", label: "1k+" },
+    { value: "5000", label: "5k+" },
+    { value: "10000", label: "10k+" },
+    { value: "50000", label: "50k+" },
   ];
 
   const SORT_OPTIONS = [
-    { value: "", label: "Most relevant" },
+    { value: "", label: "Relevance" },
     { value: "cited_by_count", label: "Most cited" },
-    { value: "works_count", label: "Most publications" },
+    { value: "works_count", label: "Most works" },
   ];
 
   function buildFilterUrl(overrides: Record<string, string>) {
@@ -92,7 +92,6 @@ export default async function SearchPage({
     if (params.minCitations) base.minCitations = params.minCitations;
     if (params.sortBy) base.sortBy = params.sortBy;
     const merged = { ...base, ...overrides };
-    // Remove empty values
     for (const key of Object.keys(merged)) {
       if (!merged[key]) delete merged[key];
     }
@@ -101,7 +100,7 @@ export default async function SearchPage({
   }
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-6">
+    <main className="max-w-[52rem] mx-auto px-6 py-6">
       <div className="mb-6">
         <SearchBar
           defaultValue={query}
@@ -110,130 +109,94 @@ export default async function SearchPage({
         />
       </div>
 
-      <div className="flex gap-8">
+      <div className="flex gap-10">
         {/* Filter sidebar */}
-        <aside className="w-56 shrink-0 hidden md:block">
-          <div className="sticky top-4 space-y-5">
-            <div>
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                Country
-              </h3>
-              <div className="space-y-1">
-                {COUNTRY_OPTIONS.map((opt) => (
-                  <Link
-                    key={opt.code}
-                    href={buildFilterUrl({ country: opt.code, page: "" })}
-                    className={`block text-sm px-2 py-1 rounded ${
-                      (params.country || "") === opt.code
-                        ? "bg-blue-50 text-blue-700 font-medium"
-                        : "text-gray-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    {opt.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+        <aside className="w-44 shrink-0 hidden md:block">
+          <div className="sticky top-4 space-y-6">
+            <FilterSection title="Country">
+              {COUNTRY_OPTIONS.map((opt) => (
+                <FilterLink
+                  key={opt.code}
+                  href={buildFilterUrl({ country: opt.code, page: "" })}
+                  active={(params.country || "") === opt.code}
+                >
+                  {opt.label}
+                </FilterLink>
+              ))}
+            </FilterSection>
 
-            <div>
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                Min Citations
-              </h3>
-              <div className="space-y-1">
-                {CITATION_OPTIONS.map((opt) => (
-                  <Link
-                    key={opt.value}
-                    href={buildFilterUrl({ minCitations: opt.value, page: "" })}
-                    className={`block text-sm px-2 py-1 rounded ${
-                      (params.minCitations || "") === opt.value
-                        ? "bg-blue-50 text-blue-700 font-medium"
-                        : "text-gray-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    {opt.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            <FilterSection title="Citations">
+              {CITATION_OPTIONS.map((opt) => (
+                <FilterLink
+                  key={opt.value}
+                  href={buildFilterUrl({ minCitations: opt.value, page: "" })}
+                  active={(params.minCitations || "") === opt.value}
+                >
+                  {opt.label}
+                </FilterLink>
+              ))}
+            </FilterSection>
 
-            <div>
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                Sort By
-              </h3>
-              <div className="space-y-1">
-                {SORT_OPTIONS.map((opt) => (
-                  <Link
-                    key={opt.value}
-                    href={buildFilterUrl({ sortBy: opt.value, page: "" })}
-                    className={`block text-sm px-2 py-1 rounded ${
-                      (params.sortBy || "") === opt.value
-                        ? "bg-blue-50 text-blue-700 font-medium"
-                        : "text-gray-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    {opt.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            <FilterSection title="Sort">
+              {SORT_OPTIONS.map((opt) => (
+                <FilterLink
+                  key={opt.value}
+                  href={buildFilterUrl({ sortBy: opt.value, page: "" })}
+                  active={(params.sortBy || "") === opt.value}
+                >
+                  {opt.label}
+                </FilterLink>
+              ))}
+            </FilterSection>
           </div>
         </aside>
 
         {/* Results */}
         <div className="flex-1 min-w-0">
-          <div className="mb-4 flex items-baseline gap-2">
-            <h1 className="text-xl font-semibold text-gray-900">
+          <div className="mb-2 flex items-baseline gap-2">
+            <h1 className="text-lg font-semibold text-ink tracking-tight">
               {topicName ? (
-                <>
-                  Professors in{" "}
-                  <span className="text-blue-600">{topicName}</span>
-                </>
+                <>Professors in {topicName}</>
               ) : (
-                <>
-                  Results for{" "}
-                  <span className="text-blue-600">&ldquo;{query}&rdquo;</span>
-                </>
+                <>Results for &ldquo;{query}&rdquo;</>
               )}
             </h1>
-            <span className="text-sm text-gray-400">
-              {formatNumber(totalCount)} found
+            <span className="text-xs text-ink-tertiary font-mono tabular-nums">
+              {formatNumber(totalCount)}
             </span>
           </div>
 
           {professors.length === 0 ? (
-            <div className="text-center py-16 text-gray-400">
-              <p className="text-lg mb-2">No professors found</p>
-              <p className="text-sm">
-                Try a different search term or broaden your filters.
-              </p>
+            <div className="text-center py-16 text-ink-tertiary">
+              <p className="mb-1">No professors found.</p>
+              <p className="text-sm">Try a different term or broaden your filters.</p>
             </div>
           ) : (
             <>
-              <div className="space-y-3">
+              <div>
                 {professors.map((prof) => (
                   <ProfessorCard key={prof.id} professor={prof} />
                 ))}
               </div>
 
-              {/* Pagination */}
-              <div className="mt-8 flex justify-center gap-2">
+              <div className="mt-8 flex justify-center items-center gap-3 text-sm">
                 {page > 1 && (
                   <Link
                     href={buildFilterUrl({ page: (page - 1).toString() })}
-                    className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600"
+                    className="text-link hover:text-link-hover transition-colors"
                   >
-                    Previous
+                    &larr; Previous
                   </Link>
                 )}
-                <span className="px-4 py-2 text-sm text-gray-400">
-                  Page {page}
+                <span className="text-ink-tertiary font-mono text-xs">
+                  page {page}
                 </span>
                 {professors.length === 25 && (
                   <Link
                     href={buildFilterUrl({ page: (page + 1).toString() })}
-                    className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600"
+                    className="text-link hover:text-link-hover transition-colors"
                   >
-                    Next
+                    Next &rarr;
                   </Link>
                 )}
               </div>
@@ -242,5 +205,45 @@ export default async function SearchPage({
         </div>
       </div>
     </main>
+  );
+}
+
+function FilterSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <h3 className="text-[0.65rem] font-medium text-ink-tertiary uppercase tracking-widest mb-2">
+        {title}
+      </h3>
+      <div className="space-y-0.5">{children}</div>
+    </div>
+  );
+}
+
+function FilterLink({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`block text-sm py-0.5 transition-colors ${
+        active
+          ? "text-ink font-medium"
+          : "text-ink-tertiary hover:text-ink-secondary"
+      }`}
+    >
+      {children}
+    </Link>
   );
 }

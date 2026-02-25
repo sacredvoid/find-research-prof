@@ -2,6 +2,8 @@ import { getAuthor, getAuthorWorks } from "@/lib/openalex";
 import { OpenAlexAuthor, OpenAlexWork } from "@/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import PublicationFilters from "@/components/PublicationFilters";
 
 function formatNumber(n: number): string {
   if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
@@ -35,10 +37,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function ProfessorPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ sort?: string; year?: string }>;
 }) {
   const { id } = await params;
+  const sp = await searchParams;
+  const sort = (sp.sort as "recent" | "cited" | "oldest") || "recent";
+  const year = sp.year || "";
 
   let author: OpenAlexAuthor;
   let works: OpenAlexWork[];
@@ -46,7 +53,7 @@ export default async function ProfessorPage({
   try {
     [author, works] = await Promise.all([
       getAuthor(id),
-      getAuthorWorks(id, 15),
+      getAuthorWorks(id, { perPage: 20, sort, year: year || undefined }),
     ]);
   } catch {
     notFound();
@@ -57,150 +64,150 @@ export default async function ProfessorPage({
   const orcidUrl = author.ids?.orcid || null;
 
   return (
-    <main className="max-w-4xl mx-auto px-4 py-8">
+    <main className="max-w-[52rem] mx-auto px-6 py-10">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold text-ink tracking-tight leading-tight">
           {author.display_name}
         </h1>
         {institution && (
-          <p className="text-lg text-gray-600">
+          <p className="text-ink-secondary mt-1">
             {institution.display_name}
             {institution.country_code && (
-              <span className="text-gray-400">
-                {" "}
-                — {countryCodeToName(institution.country_code)}
+              <span className="text-ink-tertiary">
+                {" — "}
+                {countryCodeToName(institution.country_code)}
               </span>
             )}
           </p>
         )}
         {topics[0]?.field && (
-          <p className="text-sm text-gray-400 mt-1">
-            {topics[0].field.display_name} &middot;{" "}
-            {topics[0].domain.display_name}
+          <p className="text-sm text-ink-tertiary mt-0.5">
+            {topics[0].field.display_name} · {topics[0].domain.display_name}
           </p>
         )}
-      </div>
 
-      {/* Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <MetricCard label="h-index" value={author.summary_stats?.h_index?.toString() || "—"} />
-        <MetricCard label="Total citations" value={formatNumber(author.cited_by_count)} />
-        <MetricCard label="Publications" value={formatNumber(author.works_count)} />
-        <MetricCard
-          label="2yr avg citations"
-          value={author.summary_stats?.["2yr_mean_citedness"]?.toFixed(1) || "—"}
-        />
-      </div>
-
-      {/* External links */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        <ExternalLink
-          href={author.id}
-          label="OpenAlex"
-        />
-        {orcidUrl && (
-          <ExternalLink href={orcidUrl} label="ORCID" />
-        )}
-        <ExternalLink
-          href={`https://scholar.google.com/scholar?q=author:"${encodeURIComponent(author.display_name)}"${institution ? `+"${encodeURIComponent(institution.display_name)}"` : ""}`}
-          label="Google Scholar"
-        />
-        {institution && (
-          <ExternalLink
-            href={`https://www.google.com/search?q=${encodeURIComponent(author.display_name + " " + institution.display_name + " lab")}`}
-            label="Find Lab Page"
+        {/* Metrics — inline monospace */}
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 font-mono text-sm tabular-nums">
+          <Metric label="h-index" value={author.summary_stats?.h_index?.toString() || "—"} />
+          <Metric label="citations" value={formatNumber(author.cited_by_count)} />
+          <Metric label="works" value={formatNumber(author.works_count)} />
+          <Metric
+            label="2yr avg"
+            value={author.summary_stats?.["2yr_mean_citedness"]?.toFixed(1) || "—"}
           />
-        )}
-      </div>
+        </div>
+
+        {/* External links */}
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+          <ExtLink href={author.id}>OpenAlex</ExtLink>
+          {orcidUrl && <ExtLink href={orcidUrl}>ORCID</ExtLink>}
+          <ExtLink
+            href={`https://scholar.google.com/scholar?q=author:"${encodeURIComponent(author.display_name)}"${institution ? `+"${encodeURIComponent(institution.display_name)}"` : ""}`}
+          >
+            Google Scholar
+          </ExtLink>
+          {institution && (
+            <ExtLink
+              href={`https://www.google.com/search?q=${encodeURIComponent(author.display_name + " " + institution.display_name + " lab")}`}
+            >
+              Lab page
+            </ExtLink>
+          )}
+        </div>
+      </header>
+
+      <hr className="border-rule mb-8" />
 
       {/* Research Topics */}
       {topics.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3 border-b border-gray-200 pb-2">
-            Research Topics
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {topics.map((topic) => (
-              <Link
-                key={topic.id}
-                href={`/search?q=${encodeURIComponent(topic.display_name)}&type=topic`}
-                className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm rounded-full hover:bg-blue-100 transition-colors"
-              >
-                {topic.display_name}
-                <span className="text-blue-400 ml-1 text-xs">
+          <SectionHeading>Research Topics</SectionHeading>
+          <p className="text-sm leading-relaxed">
+            {topics.map((topic, i) => (
+              <span key={topic.id}>
+                {i > 0 && ", "}
+                <Link
+                  href={`/search?q=${encodeURIComponent(topic.display_name)}&type=topic`}
+                  className="text-link hover:text-link-hover transition-colors"
+                >
+                  {topic.display_name}
+                </Link>
+                <span className="text-ink-tertiary text-xs ml-0.5">
                   ({topic.count})
                 </span>
-              </Link>
+              </span>
             ))}
-          </div>
+          </p>
         </section>
       )}
 
       {/* Publications */}
       <section className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3 border-b border-gray-200 pb-2">
-          Recent Publications
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <SectionHeading>Publications</SectionHeading>
+          <Suspense fallback={null}>
+            <PublicationFilters currentSort={sort} currentYear={year} />
+          </Suspense>
+        </div>
         {works.length === 0 ? (
-          <p className="text-gray-400 text-sm">No publications found.</p>
+          <p className="text-ink-tertiary text-sm">
+            No publications found{year ? ` for ${year}` : ""}.
+          </p>
         ) : (
-          <div className="space-y-4">
+          <div>
             {works.map((work) => (
-              <WorkCard key={work.id} work={work} />
+              <WorkEntry key={work.id} work={work} />
             ))}
           </div>
         )}
       </section>
 
-      {/* Co-authors from works */}
+      {/* Co-authors */}
       <CoauthorsSection works={works} currentAuthorId={`https://openalex.org/${id}`} />
     </main>
   );
 }
 
-function MetricCard({ label, value }: { label: string; value: string }) {
+function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-gray-200 rounded-lg p-4 text-center">
-      <div className="text-2xl font-bold text-gray-900">{value}</div>
-      <div className="text-xs text-gray-500 mt-1">{label}</div>
-    </div>
+    <span>
+      <span className="text-gold font-semibold">{value}</span>
+      <span className="text-ink-tertiary font-sans text-xs ml-1">{label}</span>
+    </span>
   );
 }
 
-function ExternalLink({ href, label }: { href: string; label: string }) {
+function ExtLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+      className="text-link hover:text-link-hover transition-colors"
     >
-      {label}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        className="w-3.5 h-3.5 text-gray-400"
-      >
-        <path
-          fillRule="evenodd"
-          d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5zm7.25-.75a.75.75 0 01.75-.75h3.5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0V6.31l-5.47 5.47a.75.75 0 01-1.06-1.06l5.47-5.47H12.5a.75.75 0 01-.75-.75z"
-          clipRule="evenodd"
-        />
-      </svg>
+      {children}
+      <span className="text-ink-muted ml-0.5">↗</span>
     </a>
   );
 }
 
-function WorkCard({ work }: { work: OpenAlexWork }) {
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="text-[0.7rem] font-medium text-ink-tertiary uppercase tracking-widest mb-3">
+      {children}
+    </h2>
+  );
+}
+
+function WorkEntry({ work }: { work: OpenAlexWork }) {
   const doiUrl = work.doi ? `https://doi.org/${work.doi.replace("https://doi.org/", "")}` : null;
   const oaUrl = work.open_access?.oa_url;
   const url = oaUrl || doiUrl;
   const journal = work.primary_location?.source?.display_name;
 
   return (
-    <div className="border-l-2 border-gray-100 pl-4 py-1">
+    <div className="py-3 border-b border-rule last:border-b-0">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           {url ? (
@@ -208,32 +215,33 @@ function WorkCard({ work }: { work: OpenAlexWork }) {
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-gray-900 hover:text-blue-600 transition-colors"
+              className="text-ink hover:text-link transition-colors leading-snug"
             >
               {work.title || "Untitled"}
             </a>
           ) : (
-            <span className="font-medium text-gray-900">
+            <span className="text-ink leading-snug">
               {work.title || "Untitled"}
             </span>
           )}
-          <div className="text-sm text-gray-500 mt-0.5">
+          <div className="text-sm text-ink-tertiary mt-0.5 flex flex-wrap items-center gap-x-1">
             {journal && <span>{journal}</span>}
-            {journal && work.publication_year && <span> &middot; </span>}
+            {journal && work.publication_year && <span>·</span>}
             {work.publication_year && <span>{work.publication_year}</span>}
+            {work.open_access?.is_oa && (
+              <>
+                <span>·</span>
+                <span className="text-oa">Open Access</span>
+              </>
+            )}
           </div>
         </div>
-        <div className="text-sm text-gray-400 shrink-0">
-          {work.cited_by_count > 0 && (
-            <span>{formatNumber(work.cited_by_count)} cited</span>
-          )}
-        </div>
+        {work.cited_by_count > 0 && (
+          <span className="text-xs font-mono tabular-nums text-gold shrink-0">
+            {formatNumber(work.cited_by_count)} cited
+          </span>
+        )}
       </div>
-      {work.open_access?.is_oa && (
-        <span className="inline-block mt-1 px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded-full">
-          Open Access
-        </span>
-      )}
     </div>
   );
 }
@@ -245,10 +253,10 @@ function CoauthorsSection({
   works: OpenAlexWork[];
   currentAuthorId: string;
 }) {
-  // Extract unique co-authors from works
   const coauthorMap = new Map<string, { name: string; count: number; id: string }>();
   for (const work of works) {
     for (const authorship of work.authorships || []) {
+      if (!authorship.author?.id) continue;
       if (authorship.author.id === currentAuthorId) continue;
       const existing = coauthorMap.get(authorship.author.id);
       if (existing) {
@@ -271,21 +279,21 @@ function CoauthorsSection({
 
   return (
     <section className="mb-8">
-      <h2 className="text-lg font-semibold text-gray-900 mb-3 border-b border-gray-200 pb-2">
-        Frequent Co-authors
-      </h2>
-      <div className="flex flex-wrap gap-2">
-        {coauthors.map((ca) => (
-          <Link
-            key={ca.id}
-            href={`/professor/${ca.id}`}
-            className="px-3 py-1.5 border border-gray-200 rounded-full text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors"
-          >
-            {ca.name}
-            <span className="text-gray-400 ml-1">({ca.count})</span>
-          </Link>
+      <SectionHeading>Frequent Co-authors</SectionHeading>
+      <p className="text-sm leading-relaxed">
+        {coauthors.map((ca, i) => (
+          <span key={ca.id}>
+            {i > 0 && ", "}
+            <Link
+              href={`/professor/${ca.id}`}
+              className="text-link hover:text-link-hover transition-colors"
+            >
+              {ca.name}
+            </Link>
+            <span className="text-ink-tertiary text-xs ml-0.5">({ca.count})</span>
+          </span>
         ))}
-      </div>
+      </p>
     </section>
   );
 }
