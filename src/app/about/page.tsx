@@ -9,9 +9,13 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main className="max-w-[40rem] mx-auto px-6 py-12">
-      <h1 className="text-2xl font-bold text-ink tracking-tight mb-6">
+      <h1 className="text-2xl font-bold text-ink tracking-tight mb-2">
         About ResearchProf
       </h1>
+      <p className="text-accent font-medium text-sm mb-6">
+        For students looking for research assistantships, PhD advisors, mentors,
+        or amazing labs to work in.
+      </p>
 
       <section className="space-y-4 text-ink-secondary leading-relaxed">
         <p>
@@ -24,7 +28,10 @@ export default function AboutPage() {
         <p>
           ResearchProf is my attempt at fixing that. One search box, one place
           to find professors by what they research — with their papers,
-          citations, and links to reach them.
+          citations, and links to reach them. Whether you&rsquo;re cold-emailing
+          for an RA position, shortlisting PhD advisors, or just exploring
+          who&rsquo;s doing interesting work in your field — this should save
+          you hours.
         </p>
       </section>
 

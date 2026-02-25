@@ -13,7 +13,7 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           <Link
             href="/about"
-            className="text-sm text-ink-tertiary hover:text-ink-secondary transition-colors"
+            className="text-sm text-ink-secondary hover:text-ink transition-colors"
           >
             About
           </Link>
