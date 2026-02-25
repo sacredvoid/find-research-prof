@@ -10,14 +10,22 @@ export default function Navbar() {
         >
           ResearchProf
         </Link>
-        <a
-          href="https://openalex.org"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-ink-tertiary hover:text-ink-secondary transition-colors"
-        >
-          Powered by OpenAlex
-        </a>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/about"
+            className="text-sm text-ink-tertiary hover:text-ink-secondary transition-colors"
+          >
+            About
+          </Link>
+          <a
+            href="https://openalex.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-ink-tertiary hover:text-ink-secondary transition-colors"
+          >
+            Powered by OpenAlex
+          </a>
+        </div>
       </div>
     </nav>
   );
