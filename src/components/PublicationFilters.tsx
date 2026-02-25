@@ -8,11 +8,11 @@ const SORT_OPTIONS = [
   { value: "oldest", label: "Oldest first" },
 ];
 
-const currentYear = new Date().getFullYear();
+const BASE_YEAR = 2026;
 const YEAR_OPTIONS = [
   { value: "", label: "All years" },
   ...Array.from({ length: 10 }, (_, i) => {
-    const y = currentYear - i;
+    const y = BASE_YEAR - i;
     return { value: y.toString(), label: y.toString() };
   }),
 ];

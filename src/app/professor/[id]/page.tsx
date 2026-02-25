@@ -44,7 +44,8 @@ export default async function ProfessorPage({
 }) {
   const { id } = await params;
   const sp = await searchParams;
-  const sort = (sp.sort as "recent" | "cited" | "oldest") || "recent";
+  const validSorts = ["recent", "cited", "oldest"] as const;
+  const sort = validSorts.includes(sp.sort as typeof validSorts[number]) ? (sp.sort as typeof validSorts[number]) : "recent";
   const year = sp.year || "";
 
   let author: OpenAlexAuthor;
@@ -83,7 +84,8 @@ export default async function ProfessorPage({
         )}
         {topics[0]?.field && (
           <p className="text-sm text-ink-tertiary mt-0.5">
-            {topics[0].field.display_name} · {topics[0].domain.display_name}
+            {topics[0].field.display_name}
+            {topics[0].domain?.display_name && ` · ${topics[0].domain.display_name}`}
           </p>
         )}
 
@@ -103,7 +105,7 @@ export default async function ProfessorPage({
           <ExtLink href={author.id}>OpenAlex</ExtLink>
           {orcidUrl && <ExtLink href={orcidUrl}>ORCID</ExtLink>}
           <ExtLink
-            href={`https://scholar.google.com/scholar?q=author:"${encodeURIComponent(author.display_name)}"${institution ? `+"${encodeURIComponent(institution.display_name)}"` : ""}`}
+            href={`https://scholar.google.com/scholar?q=${encodeURIComponent(`author:"${author.display_name}"${institution ? ` "${institution.display_name}"` : ""}`)}`}
           >
             Google Scholar
           </ExtLink>

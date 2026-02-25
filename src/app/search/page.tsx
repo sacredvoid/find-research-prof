@@ -26,7 +26,7 @@ export default async function SearchPage({
   const params = await searchParams;
   const query = params.q || "";
   const searchType = params.type || "topic";
-  const page = parseInt(params.page || "1");
+  const page = parseInt(params.page || "1") || 1;
 
   if (!query) {
     return (
@@ -41,13 +41,25 @@ export default async function SearchPage({
 
   const filters: SearchFilters = {
     country: params.country || undefined,
-    minCitations: params.minCitations ? parseInt(params.minCitations) : undefined,
-    minWorks: params.minWorks ? parseInt(params.minWorks) : undefined,
+    minCitations: params.minCitations ? (parseInt(params.minCitations) || undefined) : undefined,
+    minWorks: params.minWorks ? (parseInt(params.minWorks) || undefined) : undefined,
     sortBy: (params.sortBy as SearchFilters["sortBy"]) || undefined,
   };
 
   const searchFn = searchType === "name" ? searchByName : searchByTopic;
-  const { professors, totalCount, topicName } = await searchFn(query, filters, page);
+  let professors: Awaited<ReturnType<typeof searchFn>>["professors"] = [];
+  let totalCount = 0;
+  let topicName: string | null = null;
+  let searchError = false;
+
+  try {
+    const result = await searchFn(query, filters, page);
+    professors = result.professors;
+    totalCount = result.totalCount;
+    topicName = result.topicName;
+  } catch {
+    searchError = true;
+  }
 
   const COUNTRY_OPTIONS = [
     { code: "", label: "All countries" },
@@ -90,6 +102,7 @@ export default async function SearchPage({
     };
     if (params.country) base.country = params.country;
     if (params.minCitations) base.minCitations = params.minCitations;
+    if (params.minWorks) base.minWorks = params.minWorks;
     if (params.sortBy) base.sortBy = params.sortBy;
     const merged = { ...base, ...overrides };
     for (const key of Object.keys(merged)) {
@@ -166,7 +179,12 @@ export default async function SearchPage({
             </span>
           </div>
 
-          {professors.length === 0 ? (
+          {searchError ? (
+            <div className="text-center py-16 text-ink-tertiary">
+              <p className="mb-1">Something went wrong fetching results.</p>
+              <p className="text-sm">Please try again in a moment.</p>
+            </div>
+          ) : professors.length === 0 ? (
             <div className="text-center py-16 text-ink-tertiary">
               <p className="mb-1">No professors found.</p>
               <p className="text-sm">Try a different term or broaden your filters.</p>

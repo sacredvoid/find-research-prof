@@ -129,12 +129,15 @@ async function searchViaWorks(
   const filterParts: string[] = [`openalex:${authorIds}`, "works_count:>5"];
   if (filters.country) filterParts.push(`last_known_institutions.country_code:${filters.country}`);
   if (filters.minCitations) filterParts.push(`cited_by_count:>${filters.minCitations}`);
+  if (filters.minWorks) filterParts.push(`works_count:>${filters.minWorks}`);
+
+  const sortBy = filters.sortBy === "works_count" ? "works_count:desc" : "cited_by_count:desc";
 
   const authorsRes = await fetchOpenAlex<{ results: OpenAlexAuthor[]; meta: { count: number } }>(
     "/authors",
     {
       filter: filterParts.join(","),
-      sort: "cited_by_count:desc",
+      sort: sortBy,
       per_page: "25",
     }
   );
@@ -180,6 +183,7 @@ export async function searchByName(
 }
 
 export async function getAuthor(id: string): Promise<OpenAlexAuthor> {
+  if (!/^A\d+$/.test(id)) throw new Error("Invalid author ID");
   return fetchOpenAlex<OpenAlexAuthor>(`/authors/${id}`);
 }
 
@@ -193,6 +197,7 @@ export async function getAuthorWorks(
 ): Promise<OpenAlexWork[]> {
   const { perPage = 15, sort = "recent", year } = options;
 
+  if (!/^A\d+$/.test(authorId)) throw new Error("Invalid author ID");
   const filterParts: string[] = [`authorships.author.id:${authorId}`];
   if (year) filterParts.push(`publication_year:${year}`);
 
