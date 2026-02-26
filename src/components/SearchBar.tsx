@@ -61,7 +61,7 @@ export default function SearchBar({
               : "e.g. Geoffrey Hinton, Jennifer Doudna..."
           }
           className={`w-full bg-paper-inset border border-rule rounded-lg text-ink placeholder-ink-tertiary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent-border transition-all ${
-            isLarge ? "px-5 py-4 text-lg" : "px-4 py-2.5 text-base"
+            isLarge ? "pl-5 pr-14 py-4 text-lg" : "pl-4 pr-12 py-2.5 text-base"
           }`}
         />
         <button
