@@ -26,9 +26,26 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   try {
     const author = await getAuthor(id);
     const institution = author.last_known_institutions?.[0]?.display_name || "";
+    const topTopics = (author.topics || []).slice(0, 3).map((t) => t.display_name).join(", ");
+    const title = `${author.display_name}`;
+    const description = `${author.display_name} at ${institution}. ${author.works_count} publications, ${formatNumber(author.cited_by_count)} citations, h-index ${author.summary_stats?.h_index}.${topTopics ? ` Research areas: ${topTopics}.` : ""}`;
+
     return {
-      title: `${author.display_name} — ResearchProf`,
-      description: `${author.display_name} at ${institution}. ${author.works_count} publications, ${formatNumber(author.cited_by_count)} citations, h-index ${author.summary_stats?.h_index}.`,
+      title,
+      description,
+      openGraph: {
+        title: `${title} — ResearchProf`,
+        description,
+        type: "profile",
+      },
+      twitter: {
+        card: "summary",
+        title: `${title} — ResearchProf`,
+        description,
+      },
+      alternates: {
+        canonical: `/professor/${id}`,
+      },
     };
   } catch {
     return { title: "Professor — ResearchProf" };
@@ -64,8 +81,30 @@ export default async function ProfessorPage({
   const topics = (author.topics || []).slice(0, 10);
   const orcidUrl = author.ids?.orcid || null;
 
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: author.display_name,
+    url: `https://researchprof.com/professor/${id}`,
+    jobTitle: "Researcher",
+    ...(institution && {
+      affiliation: {
+        "@type": "Organization",
+        name: institution.display_name,
+      },
+    }),
+    ...(orcidUrl && { sameAs: [orcidUrl] }),
+    ...(topics.length > 0 && {
+      knowsAbout: topics.slice(0, 5).map((t) => t.display_name),
+    }),
+  };
+
   return (
     <main className="max-w-[52rem] mx-auto px-6 py-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+      />
       {/* Header */}
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-ink tracking-tight leading-tight">

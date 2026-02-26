@@ -2,8 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About — ResearchProf",
-  description: "Why ResearchProf exists and how to use it.",
+  title: "About",
+  description:
+    "ResearchProf helps students find PhD advisors, faculty find reviewers, and researchers map collaboration networks. Built on OpenAlex data covering 240M+ academic works.",
+  openGraph: {
+    title: "About — ResearchProf",
+    description:
+      "ResearchProf helps students find PhD advisors, faculty find reviewers, and researchers map collaboration networks.",
+  },
+  alternates: {
+    canonical: "/about",
+  },
 };
 
 export default function AboutPage() {

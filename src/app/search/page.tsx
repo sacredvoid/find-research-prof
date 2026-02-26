@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { searchByTopic, searchByName } from "@/lib/openalex";
 import SearchBar from "@/components/SearchBar";
 import ProfessorCard from "@/components/ProfessorCard";
@@ -8,6 +9,44 @@ function formatNumber(n: number): string {
   if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
   if (n >= 1000) return (n / 1000).toFixed(1) + "k";
   return n.toLocaleString();
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; type?: string }>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const query = params.q || "";
+  const type = params.type || "topic";
+
+  if (!query) {
+    return {
+      title: "Search Professors",
+      description: "Search for professors by research topic or name.",
+    };
+  }
+
+  const label = type === "name" ? "professors named" : "professors researching";
+  const title = `${query} — Find ${label} ${query}`;
+  const description = `Find ${label} "${query}". View their publications, citations, h-index, and collaboration networks on ResearchProf.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} — ResearchProf`,
+      description,
+    },
+    twitter: {
+      card: "summary",
+      title: `${title} — ResearchProf`,
+      description,
+    },
+    alternates: {
+      canonical: `/search?q=${encodeURIComponent(query)}&type=${type}`,
+    },
+  };
 }
 
 export default async function SearchPage({
