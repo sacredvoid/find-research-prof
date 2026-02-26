@@ -97,3 +97,28 @@ export interface Professor {
   recentWork: string | null;
   recentWorkYear: number | null;
 }
+
+export interface GraphNode {
+  id: string;
+  name: string;
+  institution: string;
+  country: string;
+  hIndex: number;
+  citedByCount: number;
+  worksCount: number;
+  domain: string;
+  field: string;
+  topics: { name: string; count: number }[];
+  val: number;
+}
+
+export interface GraphLink {
+  source: string;
+  target: string;
+  weight: number;
+}
+
+export interface GraphData {
+  nodes: GraphNode[];
+  links: GraphLink[];
+}

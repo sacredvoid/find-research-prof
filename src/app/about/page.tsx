@@ -13,8 +13,8 @@ export default function AboutPage() {
         About ResearchProf
       </h1>
       <p className="text-accent font-medium text-sm mb-6">
-        For students looking for research assistantships, PhD advisors, mentors,
-        or amazing labs to work in.
+        For students, researchers, and academics navigating the world of
+        scholarly collaboration.
       </p>
 
       <section className="space-y-4 text-ink-secondary leading-relaxed">
@@ -32,6 +32,14 @@ export default function AboutPage() {
           for an RA position, shortlisting PhD advisors, or just exploring
           who&rsquo;s doing interesting work in your field — this should save
           you hours.
+        </p>
+        <p>
+          It&rsquo;s not just for students, though. Faculty looking for
+          reviewers or panelists in a specific area can quickly surface active
+          researchers. Conference organizers can map who&rsquo;s publishing in a
+          niche. And if you&rsquo;re a researcher yourself, it&rsquo;s a handy
+          way to double-check your own collaboration network and discover
+          potential collaborators you might have missed.
         </p>
       </section>
 
@@ -74,6 +82,45 @@ export default function AboutPage() {
               frequent co-authors, and direct links to OpenAlex, ORCID, Google
               Scholar, and their lab page.
             </p>
+          </div>
+          <div>
+            <h3 className="font-medium text-ink mb-1">Explore research networks</h3>
+            <p className="text-sm">
+              Use the{" "}
+              <Link href="/explore" className="text-link hover:text-link-hover transition-colors">
+                3D network explorer
+              </Link>{" "}
+              to visualize collaboration graphs. Search a topic to see how the
+              top researchers in a field connect, or search an author to map
+              their co-author network. Click any node to expand it, see their
+              research areas, and discover new collaborators.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <hr className="border-rule my-8" />
+
+      <section className="mb-8">
+        <h2 className="text-[0.7rem] font-medium text-ink-tertiary uppercase tracking-widest mb-4">
+          Who is this for?
+        </h2>
+        <div className="space-y-3 text-sm text-ink-secondary leading-relaxed">
+          <div className="flex gap-3">
+            <span className="text-accent font-semibold shrink-0">Students</span>
+            <span>Find research assistantships, PhD advisors, or labs to join by searching your area of interest.</span>
+          </div>
+          <div className="flex gap-3">
+            <span className="text-accent font-semibold shrink-0">Faculty</span>
+            <span>Identify reviewers, panelists, or potential collaborators in a specific research niche.</span>
+          </div>
+          <div className="flex gap-3">
+            <span className="text-accent font-semibold shrink-0">Researchers</span>
+            <span>Audit your own collaboration network, discover adjacent researchers, and explore how your field connects.</span>
+          </div>
+          <div className="flex gap-3">
+            <span className="text-accent font-semibold shrink-0">Organizers</span>
+            <span>Map who&rsquo;s actively publishing in a topic when planning conferences, workshops, or special issues.</span>
           </div>
         </div>
       </section>
