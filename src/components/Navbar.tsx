@@ -21,7 +21,7 @@ export default function Navbar() {
             href="https://openalex.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-ink-tertiary hover:text-ink-secondary transition-colors"
+            className="text-xs text-ink-tertiary hover:text-ink-secondary transition-colors hidden sm:inline"
           >
             Powered by OpenAlex
           </a>

@@ -13,7 +13,7 @@ export default function ProfessorCard({ professor }: { professor: Professor }) {
       href={`/professor/${professor.id}`}
       className="group block py-5 border-b border-rule hover:bg-accent-bg transition-all -mx-3 px-3 rounded-md"
     >
-      <div className="flex justify-between items-baseline gap-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-6">
         <div className="min-w-0">
           <h3 className="font-semibold text-ink tracking-tight text-[1.05rem] leading-snug group-hover:text-accent transition-colors">
             {professor.name}
@@ -28,7 +28,7 @@ export default function ProfessorCard({ professor }: { professor: Professor }) {
             )}
           </p>
         </div>
-        <div className="flex gap-5 shrink-0 font-mono text-sm tabular-nums">
+        <div className="flex gap-3 sm:gap-5 shrink-0 font-mono text-sm tabular-nums">
           <span className="text-gold" title="h-index">
             h {professor.hIndex}
           </span>

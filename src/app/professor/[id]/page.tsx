@@ -146,7 +146,7 @@ export default async function ProfessorPage({
 
       {/* Publications */}
       <section className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
           <SectionHeading>Publications</SectionHeading>
           <Suspense fallback={null}>
             <PublicationFilters currentSort={sort} currentYear={year} />
@@ -210,38 +210,45 @@ function WorkEntry({ work }: { work: OpenAlexWork }) {
 
   return (
     <div className="py-3 border-b border-rule last:border-b-0">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          {url ? (
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-ink hover:text-accent transition-colors leading-snug"
-            >
-              {work.title || "Untitled"}
-            </a>
-          ) : (
-            <span className="text-ink leading-snug">
-              {work.title || "Untitled"}
-            </span>
-          )}
-          <div className="text-sm text-ink-tertiary mt-0.5 flex flex-wrap items-center gap-x-1">
-            {journal && <span>{journal}</span>}
-            {journal && work.publication_year && <span>·</span>}
-            {work.publication_year && <span>{work.publication_year}</span>}
-            {work.open_access?.is_oa && (
-              <span className="text-oa bg-oa-bg px-1.5 py-0.5 rounded text-xs font-medium">
-                Open Access
+      <div>
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            {url ? (
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-ink hover:text-accent transition-colors leading-snug"
+              >
+                {work.title || "Untitled"}
+              </a>
+            ) : (
+              <span className="text-ink leading-snug">
+                {work.title || "Untitled"}
               </span>
             )}
           </div>
+          {work.cited_by_count > 0 && (
+            <span className="text-xs font-mono tabular-nums text-gold shrink-0 hidden sm:inline">
+              {formatNumber(work.cited_by_count)} cited
+            </span>
+          )}
         </div>
-        {work.cited_by_count > 0 && (
-          <span className="text-xs font-mono tabular-nums text-gold shrink-0">
-            {formatNumber(work.cited_by_count)} cited
-          </span>
-        )}
+        <div className="text-sm text-ink-tertiary mt-0.5 flex flex-wrap items-center gap-x-1">
+          {journal && <span>{journal}</span>}
+          {journal && work.publication_year && <span>·</span>}
+          {work.publication_year && <span>{work.publication_year}</span>}
+          {work.cited_by_count > 0 && (
+            <span className="sm:hidden text-xs font-mono tabular-nums text-gold">
+              · {formatNumber(work.cited_by_count)} cited
+            </span>
+          )}
+          {work.open_access?.is_oa && (
+            <span className="text-oa bg-oa-bg px-1.5 py-0.5 rounded text-xs font-medium">
+              Open Access
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

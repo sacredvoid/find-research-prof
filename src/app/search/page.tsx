@@ -122,8 +122,55 @@ export default async function SearchPage({
         />
       </div>
 
+      {/* Mobile filters */}
+      <details className="md:hidden mb-4 border border-rule rounded-lg">
+        <summary className="px-4 py-2.5 text-sm font-medium text-ink-secondary cursor-pointer select-none hover:bg-paper-elevated transition-colors">
+          Filters
+          {(params.country || params.minCitations || params.sortBy) && (
+            <span className="ml-1.5 text-xs text-accent font-mono">(active)</span>
+          )}
+        </summary>
+        <div className="px-4 pb-4 pt-2 grid grid-cols-3 gap-4 border-t border-rule">
+          <FilterSection title="Country">
+            {COUNTRY_OPTIONS.map((opt) => (
+              <FilterLink
+                key={opt.code}
+                href={buildFilterUrl({ country: opt.code, page: "" })}
+                active={(params.country || "") === opt.code}
+              >
+                {opt.label}
+              </FilterLink>
+            ))}
+          </FilterSection>
+
+          <FilterSection title="Citations">
+            {CITATION_OPTIONS.map((opt) => (
+              <FilterLink
+                key={opt.value}
+                href={buildFilterUrl({ minCitations: opt.value, page: "" })}
+                active={(params.minCitations || "") === opt.value}
+              >
+                {opt.label}
+              </FilterLink>
+            ))}
+          </FilterSection>
+
+          <FilterSection title="Sort">
+            {SORT_OPTIONS.map((opt) => (
+              <FilterLink
+                key={opt.value}
+                href={buildFilterUrl({ sortBy: opt.value, page: "" })}
+                active={(params.sortBy || "") === opt.value}
+              >
+                {opt.label}
+              </FilterLink>
+            ))}
+          </FilterSection>
+        </div>
+      </details>
+
       <div className="flex gap-10">
-        {/* Filter sidebar */}
+        {/* Filter sidebar — desktop only */}
         <aside className="w-44 shrink-0 hidden md:block">
           <div className="sticky top-4 space-y-6">
             <FilterSection title="Country">
