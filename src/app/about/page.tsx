@@ -114,24 +114,26 @@ export default function AboutPage() {
         <h2 className="text-[0.7rem] font-medium text-ink-tertiary uppercase tracking-widest mb-4">
           Who is this for?
         </h2>
-        <div className="space-y-3 text-sm text-ink-secondary leading-relaxed">
-          <div className="flex gap-3">
-            <span className="text-accent font-semibold shrink-0">Students</span>
-            <span>Find research assistantships, PhD advisors, or labs to join by searching your area of interest.</span>
-          </div>
-          <div className="flex gap-3">
-            <span className="text-accent font-semibold shrink-0">Faculty</span>
-            <span>Identify reviewers, panelists, or potential collaborators in a specific research niche.</span>
-          </div>
-          <div className="flex gap-3">
-            <span className="text-accent font-semibold shrink-0">Researchers</span>
-            <span>Audit your own collaboration network, discover adjacent researchers, and explore how your field connects.</span>
-          </div>
-          <div className="flex gap-3">
-            <span className="text-accent font-semibold shrink-0">Organizers</span>
-            <span>Map who&rsquo;s actively publishing in a topic when planning conferences, workshops, or special issues.</span>
-          </div>
-        </div>
+        <table className="w-full text-sm text-ink-secondary leading-relaxed">
+          <tbody>
+            <tr className="align-top">
+              <td className="text-accent font-semibold pr-4 py-1.5 whitespace-nowrap">Students</td>
+              <td className="py-1.5">Find research assistantships, PhD advisors, or labs to join by searching your area of interest.</td>
+            </tr>
+            <tr className="align-top">
+              <td className="text-accent font-semibold pr-4 py-1.5 whitespace-nowrap">Faculty</td>
+              <td className="py-1.5">Identify reviewers, panelists, or potential collaborators in a specific research niche.</td>
+            </tr>
+            <tr className="align-top">
+              <td className="text-accent font-semibold pr-4 py-1.5 whitespace-nowrap">Researchers</td>
+              <td className="py-1.5">Audit your own collaboration network, discover adjacent researchers, and explore how your field connects.</td>
+            </tr>
+            <tr className="align-top">
+              <td className="text-accent font-semibold pr-4 py-1.5 whitespace-nowrap">Organizers</td>
+              <td className="py-1.5">Map who&rsquo;s actively publishing in a topic when planning conferences, workshops, or special issues.</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <hr className="border-rule my-8" />
