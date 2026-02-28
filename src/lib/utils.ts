@@ -28,3 +28,16 @@ export function escapeHtml(str: string): string {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
+
+const OPENALEX_PREFIX = "https://openalex.org/";
+
+/** Strip the OpenAlex URL prefix from an ID, e.g. "https://openalex.org/A123" -> "A123" */
+export function stripOpenAlexId(url: string): string {
+  return url.startsWith(OPENALEX_PREFIX) ? url.slice(OPENALEX_PREFIX.length) : url;
+}
+
+/** Build a clean URL query string, omitting empty values */
+export function buildQueryString(params: Record<string, string>): string {
+  const filtered = Object.entries(params).filter(([, v]) => v);
+  return new URLSearchParams(filtered).toString();
+}

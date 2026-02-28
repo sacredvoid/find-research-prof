@@ -18,6 +18,12 @@ export default function Navbar() {
             Explore Networks
           </Link>
           <Link
+            href="/changelog"
+            className="text-sm text-ink-secondary hover:text-ink transition-colors hidden sm:inline"
+          >
+            Changelog
+          </Link>
+          <Link
             href="/about"
             className="text-sm text-ink-secondary hover:text-ink transition-colors"
           >

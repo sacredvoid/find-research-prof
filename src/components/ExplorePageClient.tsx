@@ -9,6 +9,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { GraphData, GraphNode } from "@/types";
 import { buildAuthorGraph, buildTopicGraph, expandNode } from "@/lib/graph";
 import { OPENALEX_BASE_URL, OPENALEX_MAILTO, MAX_GRAPH_NODES } from "@/lib/config";
+import { stripOpenAlexId } from "@/lib/utils";
 import Link from "next/link";
 
 export default function ExplorePageClient() {
@@ -50,7 +51,7 @@ export default function ExplorePageClient() {
           setGraphData({ nodes: [], links: [] });
           return;
         }
-        const authorId = author.id.replace("https://openalex.org/", "");
+        const authorId = stripOpenAlexId(author.id);
         const graph = await buildAuthorGraph(authorId);
         setGraphData(graph);
         setSearchInfo(

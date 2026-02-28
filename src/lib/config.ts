@@ -6,6 +6,8 @@ export const SITE_DESCRIPTION =
   "Search any research topic and instantly find professors working in that field. View their papers, citations, h-index, collaboration networks, and direct links — all in one place.";
 
 export const MAX_GRAPH_NODES = 150;
+export const SEARCH_PAGE_SIZE = 25;
+export const PROFESSOR_PAGE_SIZE = 20;
 
 export const COUNTRIES: { code: string; label: string }[] = [
   { code: "", label: "All countries" },

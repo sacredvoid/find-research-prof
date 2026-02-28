@@ -4,8 +4,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import PublicationFilters from "@/components/PublicationFilters";
-import { formatNumber, safeJsonLd } from "@/lib/utils";
-import { countryCodeToName } from "@/lib/config";
+import MetricBadge from "@/components/MetricBadge";
+import SectionHeading from "@/components/SectionHeading";
+import { formatNumber, safeJsonLd, buildQueryString } from "@/lib/utils";
+import { countryCodeToName, PROFESSOR_PAGE_SIZE, SITE_URL } from "@/lib/config";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -74,13 +76,13 @@ export default async function ProfessorPage({
   const institution = author.last_known_institutions?.[0];
   const topics = (author.topics || []).slice(0, 10);
   const orcidUrl = author.ids?.orcid || null;
-  const totalPages = Math.ceil(totalWorksCount / 20);
+  const totalPages = Math.ceil(totalWorksCount / PROFESSOR_PAGE_SIZE);
 
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: author.display_name,
-    url: `https://researchprof.com/professor/${id}`,
+    url: `${SITE_URL}/professor/${id}`,
     jobTitle: "Researcher",
     ...(institution && {
       affiliation: {
@@ -95,15 +97,11 @@ export default async function ProfessorPage({
   };
 
   function buildPubUrl(overrides: Record<string, string>) {
-    const base: Record<string, string> = {};
-    if (sort !== "recent") base.sort = sort;
-    if (year) base.year = year;
-    const merged = { ...base, ...overrides };
-    for (const key of Object.keys(merged)) {
-      if (!merged[key]) delete merged[key];
-    }
-    const sp = new URLSearchParams(merged);
-    const qs = sp.toString();
+    const qs = buildQueryString({
+      sort: sort !== "recent" ? sort : "",
+      year,
+      ...overrides,
+    });
     return `/professor/${id}${qs ? `?${qs}` : ""}`;
   }
 
@@ -138,10 +136,10 @@ export default async function ProfessorPage({
 
         {/* Metrics */}
         <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 font-mono text-sm tabular-nums">
-          <Metric label="h-index" value={author.summary_stats?.h_index?.toString() || "—"} />
-          <Metric label="citations" value={formatNumber(author.cited_by_count)} />
-          <Metric label="works" value={formatNumber(author.works_count)} />
-          <Metric
+          <MetricBadge label="h-index" value={author.summary_stats?.h_index?.toString() || "—"} />
+          <MetricBadge label="citations" value={formatNumber(author.cited_by_count)} />
+          <MetricBadge label="works" value={formatNumber(author.works_count)} />
+          <MetricBadge
             label="2yr avg"
             value={author.summary_stats?.["2yr_mean_citedness"]?.toFixed(1) || "—"}
           />
@@ -250,15 +248,6 @@ export default async function ProfessorPage({
   );
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <span className="bg-gold-bg px-2.5 py-1 rounded-md">
-      <span className="text-gold font-semibold">{value}</span>
-      <span className="text-gold-muted font-sans text-xs ml-1">{label}</span>
-    </span>
-  );
-}
-
 function ExtLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <a
@@ -270,14 +259,6 @@ function ExtLink({ href, children }: { href: string; children: React.ReactNode }
       {children}
       <span className="text-accent/50">↗</span>
     </a>
-  );
-}
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="text-[0.7rem] font-medium text-ink-tertiary uppercase tracking-widest mb-3">
-      {children}
-    </h2>
   );
 }
 
