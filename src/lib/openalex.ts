@@ -1,17 +1,20 @@
 import { OpenAlexAuthor, OpenAlexWork, OpenAlexTopic, Professor, SearchFilters } from "@/types";
-
-const BASE_URL = "https://api.openalex.org";
-const MAILTO = "researchprof@example.com";
+import { OPENALEX_BASE_URL, OPENALEX_MAILTO, countryCodeToName } from "@/lib/config";
+import { apiCache } from "@/lib/cache";
 
 async function fetchOpenAlex<T>(path: string, params: Record<string, string> = {}): Promise<T> {
-  const url = new URL(`${BASE_URL}${path}`);
-  url.searchParams.set("mailto", MAILTO);
+  const url = new URL(`${OPENALEX_BASE_URL}${path}`);
+  url.searchParams.set("mailto", OPENALEX_MAILTO);
   for (const [key, value] of Object.entries(params)) {
     if (value) url.searchParams.set(key, value);
   }
-  const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
-  if (!res.ok) throw new Error(`OpenAlex API error: ${res.status}`);
-  return res.json();
+  const cacheKey = url.toString();
+
+  return apiCache.fetch(cacheKey, async () => {
+    const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
+    if (!res.ok) throw new Error(`OpenAlex API error: ${res.status}`);
+    return res.json();
+  });
 }
 
 function authorToProfessor(author: OpenAlexAuthor): Professor {
@@ -45,7 +48,6 @@ export async function searchByTopic(
   filters: SearchFilters = {},
   page: number = 1
 ): Promise<{ professors: Professor[]; totalCount: number; topicName: string | null }> {
-  // Strategy 1: Search OpenAlex topics for a match
   const topicsRes = await fetchOpenAlex<{ results: OpenAlexTopic[] }>("/topics", {
     search: query,
     per_page: "1",
@@ -79,7 +81,6 @@ export async function searchByTopic(
     };
   }
 
-  // Strategy 2: No topic match — search works, extract top authors
   return searchViaWorks(query, filters, page);
 }
 
@@ -88,14 +89,12 @@ async function searchViaWorks(
   filters: SearchFilters = {},
   page: number = 1
 ): Promise<{ professors: Professor[]; totalCount: number; topicName: string | null }> {
-  // Search works matching the query, collect author IDs
   const worksRes = await fetchOpenAlex<{ results: OpenAlexWork[] }>("/works", {
     search: query,
     per_page: "100",
     select: "authorships",
   });
 
-  // Aggregate authors by frequency
   const authorCounts = new Map<string, { name: string; count: number }>();
   for (const work of worksRes.results) {
     for (const authorship of work.authorships || []) {
@@ -110,7 +109,6 @@ async function searchViaWorks(
     }
   }
 
-  // Sort by frequency, take top authors for this page
   const sortedAuthors = Array.from(authorCounts.entries())
     .sort((a, b) => b[1].count - a[1].count);
 
@@ -121,7 +119,6 @@ async function searchViaWorks(
     return { professors: [], totalCount: 0, topicName: null };
   }
 
-  // Fetch full author details
   const authorIds = pageAuthors
     .map(([id]) => id.replace("https://openalex.org/", ""))
     .join("|");
@@ -193,9 +190,10 @@ export async function getAuthorWorks(
     perPage?: number;
     sort?: "recent" | "cited" | "oldest";
     year?: string;
+    page?: number;
   } = {}
-): Promise<OpenAlexWork[]> {
-  const { perPage = 15, sort = "recent", year } = options;
+): Promise<{ works: OpenAlexWork[]; totalCount: number }> {
+  const { perPage = 20, sort = "recent", year, page = 1 } = options;
 
   if (!/^A\d+$/.test(authorId)) throw new Error("Invalid author ID");
   const filterParts: string[] = [`authorships.author.id:${authorId}`];
@@ -207,23 +205,48 @@ export async function getAuthorWorks(
     oldest: "publication_date:asc",
   };
 
-  const res = await fetchOpenAlex<{ results: OpenAlexWork[] }>("/works", {
+  const res = await fetchOpenAlex<{ results: OpenAlexWork[]; meta: { count: number } }>("/works", {
     filter: filterParts.join(","),
     sort: sortMap[sort],
     per_page: perPage.toString(),
+    page: page.toString(),
   });
-  return res.results;
+  return { works: res.results, totalCount: res.meta.count };
 }
 
-function countryCodeToName(code: string): string {
-  const countries: Record<string, string> = {
-    US: "United States", GB: "United Kingdom", CA: "Canada", DE: "Germany",
-    FR: "France", CN: "China", JP: "Japan", AU: "Australia", NL: "Netherlands",
-    CH: "Switzerland", SE: "Sweden", KR: "South Korea", IN: "India",
-    BR: "Brazil", IT: "Italy", ES: "Spain", SG: "Singapore", IL: "Israel",
-    DK: "Denmark", NO: "Norway", FI: "Finland", AT: "Austria", BE: "Belgium",
-    IE: "Ireland", NZ: "New Zealand", HK: "Hong Kong", TW: "Taiwan",
-    PT: "Portugal", CZ: "Czech Republic", PL: "Poland",
-  };
-  return countries[code] || code;
+export async function getAuthorCoauthors(
+  authorId: string
+): Promise<{ name: string; count: number; id: string }[]> {
+  if (!/^A\d+$/.test(authorId)) throw new Error("Invalid author ID");
+
+  const res = await fetchOpenAlex<{ results: OpenAlexWork[] }>("/works", {
+    filter: `authorships.author.id:${authorId}`,
+    sort: "cited_by_count:desc",
+    per_page: "50",
+    select: "authorships",
+  });
+
+  const coauthorMap = new Map<string, { name: string; count: number; id: string }>();
+  const fullAuthorId = `https://openalex.org/${authorId}`;
+
+  for (const work of res.results) {
+    for (const authorship of work.authorships || []) {
+      if (!authorship.author?.id) continue;
+      if (authorship.author.id === fullAuthorId) continue;
+      const existing = coauthorMap.get(authorship.author.id);
+      if (existing) {
+        existing.count++;
+      } else {
+        coauthorMap.set(authorship.author.id, {
+          name: authorship.author.display_name,
+          count: 1,
+          id: authorship.author.id.replace("https://openalex.org/", ""),
+        });
+      }
+    }
+  }
+
+  return Array.from(coauthorMap.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 20);
 }

@@ -1,7 +1,6 @@
 import { GraphNode, GraphLink, GraphData, OpenAlexWork, OpenAlexAuthor } from "@/types";
+import { OPENALEX_BASE_URL, OPENALEX_MAILTO, MAX_GRAPH_NODES } from "@/lib/config";
 
-const BASE_URL = "https://api.openalex.org";
-const MAILTO = "researchprof@example.com";
 const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 // Browser-level cache to avoid redundant API calls during exploration
@@ -20,8 +19,8 @@ async function cachedFetch<T>(url: string): Promise<T> {
 }
 
 function buildUrl(path: string, params: Record<string, string> = {}): string {
-  const url = new URL(`${BASE_URL}${path}`);
-  url.searchParams.set("mailto", MAILTO);
+  const url = new URL(`${OPENALEX_BASE_URL}${path}`);
+  url.searchParams.set("mailto", OPENALEX_MAILTO);
   for (const [key, value] of Object.entries(params)) {
     if (value) url.searchParams.set(key, value);
   }
@@ -155,7 +154,7 @@ export async function buildTopicGraph(query: string): Promise<GraphData & { topi
   const topicId = topic?.id?.replace("https://openalex.org/", "");
 
   let authorIds: string[];
-  let topicName: string | null = topic?.display_name || null;
+  const topicName: string | null = topic?.display_name || null;
 
   if (topicId) {
     // Get top 30 authors in this topic
@@ -234,6 +233,10 @@ export async function buildTopicGraph(query: string): Promise<GraphData & { topi
 
 export async function expandNode(authorId: string, existingNodeIds: Set<string>): Promise<GraphData> {
   if (!/^A\d+$/.test(authorId)) throw new Error("Invalid author ID");
+
+  if (existingNodeIds.size >= MAX_GRAPH_NODES) {
+    throw new Error(`Graph limit reached (${MAX_GRAPH_NODES} nodes). Reset the graph to explore a new network.`);
+  }
 
   // Fetch works for this author
   const worksRes = await cachedFetch<{ results: OpenAlexWork[] }>(

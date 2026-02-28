@@ -2,12 +2,7 @@
 
 import Link from "next/link";
 import { GraphNode, GraphLink } from "@/types";
-
-function formatNumber(n: number): string {
-  if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
-  if (n >= 1000) return (n / 1000).toFixed(1) + "k";
-  return n.toLocaleString();
-}
+import { formatNumber } from "@/lib/utils";
 
 interface Collaborator {
   id: string;

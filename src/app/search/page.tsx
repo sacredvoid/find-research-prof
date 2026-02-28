@@ -4,12 +4,8 @@ import SearchBar from "@/components/SearchBar";
 import ProfessorCard from "@/components/ProfessorCard";
 import Link from "next/link";
 import { SearchFilters } from "@/types";
-
-function formatNumber(n: number): string {
-  if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
-  if (n >= 1000) return (n / 1000).toFixed(1) + "k";
-  return n.toLocaleString();
-}
+import { formatNumber } from "@/lib/utils";
+import { COUNTRIES } from "@/lib/config";
 
 export async function generateMetadata({
   searchParams,
@@ -100,24 +96,7 @@ export default async function SearchPage({
     searchError = true;
   }
 
-  const COUNTRY_OPTIONS = [
-    { code: "", label: "All countries" },
-    { code: "US", label: "United States" },
-    { code: "GB", label: "United Kingdom" },
-    { code: "CA", label: "Canada" },
-    { code: "DE", label: "Germany" },
-    { code: "CN", label: "China" },
-    { code: "JP", label: "Japan" },
-    { code: "AU", label: "Australia" },
-    { code: "FR", label: "France" },
-    { code: "NL", label: "Netherlands" },
-    { code: "CH", label: "Switzerland" },
-    { code: "IN", label: "India" },
-    { code: "KR", label: "South Korea" },
-    { code: "SE", label: "Sweden" },
-    { code: "SG", label: "Singapore" },
-    { code: "IL", label: "Israel" },
-  ];
+  const COUNTRY_OPTIONS = COUNTRIES;
 
   const CITATION_OPTIONS = [
     { value: "", label: "Any" },
