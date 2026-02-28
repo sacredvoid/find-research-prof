@@ -1,25 +1,13 @@
-import { getAuthor, getAuthorWorks } from "@/lib/openalex";
+import { getAuthor, getAuthorWorks, getAuthorCoauthors } from "@/lib/openalex";
 import { OpenAlexAuthor, OpenAlexWork } from "@/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import PublicationFilters from "@/components/PublicationFilters";
-
-function formatNumber(n: number): string {
-  if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
-  if (n >= 1000) return (n / 1000).toFixed(1) + "k";
-  return n.toLocaleString();
-}
-
-function countryCodeToName(code: string): string {
-  const countries: Record<string, string> = {
-    US: "United States", GB: "United Kingdom", CA: "Canada", DE: "Germany",
-    FR: "France", CN: "China", JP: "Japan", AU: "Australia", NL: "Netherlands",
-    CH: "Switzerland", SE: "Sweden", KR: "South Korea", IN: "India",
-    BR: "Brazil", IT: "Italy", ES: "Spain", SG: "Singapore", IL: "Israel",
-  };
-  return countries[code] || code;
-}
+import MetricBadge from "@/components/MetricBadge";
+import SectionHeading from "@/components/SectionHeading";
+import { formatNumber, safeJsonLd, buildQueryString } from "@/lib/utils";
+import { countryCodeToName, PROFESSOR_PAGE_SIZE, SITE_URL } from "@/lib/config";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -57,22 +45,30 @@ export default async function ProfessorPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ sort?: string; year?: string }>;
+  searchParams: Promise<{ sort?: string; year?: string; page?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
   const validSorts = ["recent", "cited", "oldest"] as const;
   const sort = validSorts.includes(sp.sort as typeof validSorts[number]) ? (sp.sort as typeof validSorts[number]) : "recent";
   const year = sp.year || "";
+  const page = parseInt(sp.page || "1") || 1;
 
   let author: OpenAlexAuthor;
   let works: OpenAlexWork[];
+  let totalWorksCount: number;
+  let coauthors: { name: string; count: number; id: string }[];
 
   try {
-    [author, works] = await Promise.all([
+    const [authorData, worksData, coauthorData] = await Promise.all([
       getAuthor(id),
-      getAuthorWorks(id, { perPage: 20, sort, year: year || undefined }),
+      getAuthorWorks(id, { perPage: 20, sort, year: year || undefined, page }),
+      getAuthorCoauthors(id),
     ]);
+    author = authorData;
+    works = worksData.works;
+    totalWorksCount = worksData.totalCount;
+    coauthors = coauthorData;
   } catch {
     notFound();
   }
@@ -80,12 +76,13 @@ export default async function ProfessorPage({
   const institution = author.last_known_institutions?.[0];
   const topics = (author.topics || []).slice(0, 10);
   const orcidUrl = author.ids?.orcid || null;
+  const totalPages = Math.ceil(totalWorksCount / PROFESSOR_PAGE_SIZE);
 
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: author.display_name,
-    url: `https://researchprof.com/professor/${id}`,
+    url: `${SITE_URL}/professor/${id}`,
     jobTitle: "Researcher",
     ...(institution && {
       affiliation: {
@@ -99,11 +96,20 @@ export default async function ProfessorPage({
     }),
   };
 
+  function buildPubUrl(overrides: Record<string, string>) {
+    const qs = buildQueryString({
+      sort: sort !== "recent" ? sort : "",
+      year,
+      ...overrides,
+    });
+    return `/professor/${id}${qs ? `?${qs}` : ""}`;
+  }
+
   return (
     <main className="max-w-[52rem] mx-auto px-6 py-10">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(personJsonLd) }}
       />
       {/* Header */}
       <header className="mb-8">
@@ -128,12 +134,12 @@ export default async function ProfessorPage({
           </p>
         )}
 
-        {/* Metrics — inline monospace */}
+        {/* Metrics */}
         <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 font-mono text-sm tabular-nums">
-          <Metric label="h-index" value={author.summary_stats?.h_index?.toString() || "—"} />
-          <Metric label="citations" value={formatNumber(author.cited_by_count)} />
-          <Metric label="works" value={formatNumber(author.works_count)} />
-          <Metric
+          <MetricBadge label="h-index" value={author.summary_stats?.h_index?.toString() || "—"} />
+          <MetricBadge label="citations" value={formatNumber(author.cited_by_count)} />
+          <MetricBadge label="works" value={formatNumber(author.works_count)} />
+          <MetricBadge
             label="2yr avg"
             value={author.summary_stats?.["2yr_mean_citedness"]?.toFixed(1) || "—"}
           />
@@ -186,7 +192,12 @@ export default async function ProfessorPage({
       {/* Publications */}
       <section className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-          <SectionHeading>Publications</SectionHeading>
+          <SectionHeading>
+            Publications
+            <span className="ml-2 text-ink-tertiary font-mono text-xs normal-case tracking-normal">
+              {formatNumber(totalWorksCount)} total
+            </span>
+          </SectionHeading>
           <Suspense fallback={null}>
             <PublicationFilters currentSort={sort} currentYear={year} />
           </Suspense>
@@ -196,26 +207,44 @@ export default async function ProfessorPage({
             No publications found{year ? ` for ${year}` : ""}.
           </p>
         ) : (
-          <div>
-            {works.map((work) => (
-              <WorkEntry key={work.id} work={work} />
-            ))}
-          </div>
+          <>
+            <div>
+              {works.map((work) => (
+                <WorkEntry key={work.id} work={work} />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-6 flex justify-center items-center gap-3 text-sm">
+                {page > 1 && (
+                  <Link
+                    href={buildPubUrl({ page: (page - 1).toString() })}
+                    className="text-accent hover:text-accent-hover bg-accent-bg hover:bg-accent-border px-3 py-1.5 rounded-md font-medium transition-all"
+                  >
+                    &larr; Previous
+                  </Link>
+                )}
+                <span className="text-ink-tertiary font-mono text-xs px-2">
+                  page {page} of {totalPages}
+                </span>
+                {page < totalPages && (
+                  <Link
+                    href={buildPubUrl({ page: (page + 1).toString() })}
+                    className="text-accent hover:text-accent-hover bg-accent-bg hover:bg-accent-border px-3 py-1.5 rounded-md font-medium transition-all"
+                  >
+                    Next &rarr;
+                  </Link>
+                )}
+              </div>
+            )}
+          </>
         )}
       </section>
 
       {/* Co-authors */}
-      <CoauthorsSection works={works} currentAuthorId={`https://openalex.org/${id}`} />
+      <CoauthorsSection coauthors={coauthors} />
     </main>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <span className="bg-gold-bg px-2.5 py-1 rounded-md">
-      <span className="text-gold font-semibold">{value}</span>
-      <span className="text-gold-muted font-sans text-xs ml-1">{label}</span>
-    </span>
   );
 }
 
@@ -230,14 +259,6 @@ function ExtLink({ href, children }: { href: string; children: React.ReactNode }
       {children}
       <span className="text-accent/50">↗</span>
     </a>
-  );
-}
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="text-[0.7rem] font-medium text-ink-tertiary uppercase tracking-widest mb-3">
-      {children}
-    </h2>
   );
 }
 
@@ -294,34 +315,10 @@ function WorkEntry({ work }: { work: OpenAlexWork }) {
 }
 
 function CoauthorsSection({
-  works,
-  currentAuthorId,
+  coauthors,
 }: {
-  works: OpenAlexWork[];
-  currentAuthorId: string;
+  coauthors: { name: string; count: number; id: string }[];
 }) {
-  const coauthorMap = new Map<string, { name: string; count: number; id: string }>();
-  for (const work of works) {
-    for (const authorship of work.authorships || []) {
-      if (!authorship.author?.id) continue;
-      if (authorship.author.id === currentAuthorId) continue;
-      const existing = coauthorMap.get(authorship.author.id);
-      if (existing) {
-        existing.count++;
-      } else {
-        coauthorMap.set(authorship.author.id, {
-          name: authorship.author.display_name,
-          count: 1,
-          id: authorship.author.id.replace("https://openalex.org/", ""),
-        });
-      }
-    }
-  }
-
-  const coauthors = Array.from(coauthorMap.values())
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 15);
-
   if (coauthors.length === 0) return null;
 
   return (

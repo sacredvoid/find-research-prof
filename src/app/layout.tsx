@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Navbar from "@/components/Navbar";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/config";
+import { safeJsonLd } from "@/lib/utils";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,11 +15,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-const SITE_URL = "https://researchprof.com";
-const SITE_NAME = "ResearchProf";
-const SITE_DESCRIPTION =
-  "Search any research topic and instantly find professors working in that field. View their papers, citations, h-index, collaboration networks, and direct links — all in one place.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -97,7 +94,7 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
         />
       </head>
       <body

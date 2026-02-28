@@ -1,11 +1,6 @@
 import Link from "next/link";
 import { Professor } from "@/types";
-
-function formatNumber(n: number): string {
-  if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
-  if (n >= 1000) return (n / 1000).toFixed(1) + "k";
-  return n.toString();
-}
+import { formatNumber } from "@/lib/utils";
 
 export default function ProfessorCard({ professor }: { professor: Professor }) {
   return (

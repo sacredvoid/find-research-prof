@@ -1,17 +1,34 @@
 import { OpenAlexAuthor, OpenAlexWork, OpenAlexTopic, Professor, SearchFilters } from "@/types";
-
-const BASE_URL = "https://api.openalex.org";
-const MAILTO = "researchprof@example.com";
+import { OPENALEX_BASE_URL, OPENALEX_MAILTO, countryCodeToName, SEARCH_PAGE_SIZE, PROFESSOR_PAGE_SIZE } from "@/lib/config";
+import { apiCache } from "@/lib/cache";
+import { stripOpenAlexId } from "@/lib/utils";
 
 async function fetchOpenAlex<T>(path: string, params: Record<string, string> = {}): Promise<T> {
-  const url = new URL(`${BASE_URL}${path}`);
-  url.searchParams.set("mailto", MAILTO);
+  const url = new URL(`${OPENALEX_BASE_URL}${path}`);
+  url.searchParams.set("mailto", OPENALEX_MAILTO);
   for (const [key, value] of Object.entries(params)) {
     if (value) url.searchParams.set(key, value);
   }
-  const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
-  if (!res.ok) throw new Error(`OpenAlex API error: ${res.status}`);
-  return res.json();
+  const cacheKey = url.toString();
+
+  return apiCache.fetch(cacheKey, async () => {
+    const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
+    if (!res.ok) throw new Error(`OpenAlex API error: ${res.status}`);
+    return res.json();
+  });
+}
+
+/** Build OpenAlex author filter parts from SearchFilters */
+function buildAuthorFilters(filters: SearchFilters, base: string[] = []): string[] {
+  const parts = [...base];
+  if (filters.country) parts.push(`last_known_institutions.country_code:${filters.country}`);
+  if (filters.minCitations) parts.push(`cited_by_count:>${filters.minCitations}`);
+  if (filters.minWorks) parts.push(`works_count:>${filters.minWorks}`);
+  return parts;
+}
+
+function authorSortParam(filters: SearchFilters): string {
+  return filters.sortBy === "works_count" ? "works_count:desc" : "cited_by_count:desc";
 }
 
 function authorToProfessor(author: OpenAlexAuthor): Professor {
@@ -19,7 +36,7 @@ function authorToProfessor(author: OpenAlexAuthor): Professor {
   const topTopics = (author.topics || []).slice(0, 5);
 
   return {
-    id: author.id.replace("https://openalex.org/", ""),
+    id: stripOpenAlexId(author.id),
     name: author.display_name,
     institution: institution?.display_name || "Unknown",
     country: countryCodeToName(institution?.country_code || ""),
@@ -27,16 +44,13 @@ function authorToProfessor(author: OpenAlexAuthor): Professor {
     department: topTopics[0]?.field?.display_name || "",
     topics: topTopics.map((t) => ({
       name: t.display_name,
-      id: t.id.replace("https://openalex.org/", ""),
+      id: stripOpenAlexId(t.id),
     })),
     hIndex: author.summary_stats?.h_index || 0,
     worksCount: author.works_count || 0,
     citedByCount: author.cited_by_count || 0,
     orcid: author.ids?.orcid || null,
-    scholarUrl: null,
     openAlexUrl: author.id,
-    recentWork: null,
-    recentWorkYear: null,
   };
 }
 
@@ -45,7 +59,6 @@ export async function searchByTopic(
   filters: SearchFilters = {},
   page: number = 1
 ): Promise<{ professors: Professor[]; totalCount: number; topicName: string | null }> {
-  // Strategy 1: Search OpenAlex topics for a match
   const topicsRes = await fetchOpenAlex<{ results: OpenAlexTopic[] }>("/topics", {
     search: query,
     per_page: "1",
@@ -54,20 +67,15 @@ export async function searchByTopic(
   const topic = topicsRes.results?.[0];
 
   if (topic) {
-    const topicId = topic.id.replace("https://openalex.org/", "");
-    const filterParts: string[] = [`topics.id:${topicId}`, "works_count:>5"];
-    if (filters.country) filterParts.push(`last_known_institutions.country_code:${filters.country}`);
-    if (filters.minCitations) filterParts.push(`cited_by_count:>${filters.minCitations}`);
-    if (filters.minWorks) filterParts.push(`works_count:>${filters.minWorks}`);
-
-    const sortBy = filters.sortBy === "works_count" ? "works_count:desc" : "cited_by_count:desc";
+    const topicId = stripOpenAlexId(topic.id);
+    const filterParts = buildAuthorFilters(filters, [`topics.id:${topicId}`, "works_count:>5"]);
 
     const authorsRes = await fetchOpenAlex<{ results: OpenAlexAuthor[]; meta: { count: number } }>(
       "/authors",
       {
         filter: filterParts.join(","),
-        sort: sortBy,
-        per_page: "25",
+        sort: authorSortParam(filters),
+        per_page: SEARCH_PAGE_SIZE.toString(),
         page: page.toString(),
       }
     );
@@ -79,7 +87,6 @@ export async function searchByTopic(
     };
   }
 
-  // Strategy 2: No topic match — search works, extract top authors
   return searchViaWorks(query, filters, page);
 }
 
@@ -88,14 +95,12 @@ async function searchViaWorks(
   filters: SearchFilters = {},
   page: number = 1
 ): Promise<{ professors: Professor[]; totalCount: number; topicName: string | null }> {
-  // Search works matching the query, collect author IDs
   const worksRes = await fetchOpenAlex<{ results: OpenAlexWork[] }>("/works", {
     search: query,
     per_page: "100",
     select: "authorships",
   });
 
-  // Aggregate authors by frequency
   const authorCounts = new Map<string, { name: string; count: number }>();
   for (const work of worksRes.results) {
     for (const authorship of work.authorships || []) {
@@ -110,35 +115,28 @@ async function searchViaWorks(
     }
   }
 
-  // Sort by frequency, take top authors for this page
   const sortedAuthors = Array.from(authorCounts.entries())
     .sort((a, b) => b[1].count - a[1].count);
 
-  const startIdx = (page - 1) * 25;
-  const pageAuthors = sortedAuthors.slice(startIdx, startIdx + 25);
+  const startIdx = (page - 1) * SEARCH_PAGE_SIZE;
+  const pageAuthors = sortedAuthors.slice(startIdx, startIdx + SEARCH_PAGE_SIZE);
 
   if (pageAuthors.length === 0) {
     return { professors: [], totalCount: 0, topicName: null };
   }
 
-  // Fetch full author details
   const authorIds = pageAuthors
-    .map(([id]) => id.replace("https://openalex.org/", ""))
+    .map(([id]) => stripOpenAlexId(id))
     .join("|");
 
-  const filterParts: string[] = [`openalex:${authorIds}`, "works_count:>5"];
-  if (filters.country) filterParts.push(`last_known_institutions.country_code:${filters.country}`);
-  if (filters.minCitations) filterParts.push(`cited_by_count:>${filters.minCitations}`);
-  if (filters.minWorks) filterParts.push(`works_count:>${filters.minWorks}`);
-
-  const sortBy = filters.sortBy === "works_count" ? "works_count:desc" : "cited_by_count:desc";
+  const filterParts = buildAuthorFilters(filters, [`openalex:${authorIds}`, "works_count:>5"]);
 
   const authorsRes = await fetchOpenAlex<{ results: OpenAlexAuthor[]; meta: { count: number } }>(
     "/authors",
     {
       filter: filterParts.join(","),
-      sort: sortBy,
-      per_page: "25",
+      sort: authorSortParam(filters),
+      per_page: SEARCH_PAGE_SIZE.toString(),
     }
   );
 
@@ -154,15 +152,12 @@ export async function searchByName(
   filters: SearchFilters = {},
   page: number = 1
 ): Promise<{ professors: Professor[]; totalCount: number; topicName: string | null }> {
-  const filterParts: string[] = ["works_count:>5"];
-  if (filters.country) filterParts.push(`last_known_institutions.country_code:${filters.country}`);
-  if (filters.minCitations) filterParts.push(`cited_by_count:>${filters.minCitations}`);
-  if (filters.minWorks) filterParts.push(`works_count:>${filters.minWorks}`);
+  const filterParts = buildAuthorFilters(filters, ["works_count:>5"]);
 
   const params: Record<string, string> = {
     search: query,
     filter: filterParts.join(","),
-    per_page: "25",
+    per_page: SEARCH_PAGE_SIZE.toString(),
     page: page.toString(),
   };
 
@@ -193,9 +188,10 @@ export async function getAuthorWorks(
     perPage?: number;
     sort?: "recent" | "cited" | "oldest";
     year?: string;
+    page?: number;
   } = {}
-): Promise<OpenAlexWork[]> {
-  const { perPage = 15, sort = "recent", year } = options;
+): Promise<{ works: OpenAlexWork[]; totalCount: number }> {
+  const { perPage = PROFESSOR_PAGE_SIZE, sort = "recent", year, page = 1 } = options;
 
   if (!/^A\d+$/.test(authorId)) throw new Error("Invalid author ID");
   const filterParts: string[] = [`authorships.author.id:${authorId}`];
@@ -207,23 +203,47 @@ export async function getAuthorWorks(
     oldest: "publication_date:asc",
   };
 
-  const res = await fetchOpenAlex<{ results: OpenAlexWork[] }>("/works", {
+  const res = await fetchOpenAlex<{ results: OpenAlexWork[]; meta: { count: number } }>("/works", {
     filter: filterParts.join(","),
     sort: sortMap[sort],
     per_page: perPage.toString(),
+    page: page.toString(),
   });
-  return res.results;
+  return { works: res.results, totalCount: res.meta.count };
 }
 
-function countryCodeToName(code: string): string {
-  const countries: Record<string, string> = {
-    US: "United States", GB: "United Kingdom", CA: "Canada", DE: "Germany",
-    FR: "France", CN: "China", JP: "Japan", AU: "Australia", NL: "Netherlands",
-    CH: "Switzerland", SE: "Sweden", KR: "South Korea", IN: "India",
-    BR: "Brazil", IT: "Italy", ES: "Spain", SG: "Singapore", IL: "Israel",
-    DK: "Denmark", NO: "Norway", FI: "Finland", AT: "Austria", BE: "Belgium",
-    IE: "Ireland", NZ: "New Zealand", HK: "Hong Kong", TW: "Taiwan",
-    PT: "Portugal", CZ: "Czech Republic", PL: "Poland",
-  };
-  return countries[code] || code;
+export async function getAuthorCoauthors(
+  authorId: string
+): Promise<{ name: string; count: number; id: string }[]> {
+  if (!/^A\d+$/.test(authorId)) throw new Error("Invalid author ID");
+
+  const res = await fetchOpenAlex<{ results: OpenAlexWork[] }>("/works", {
+    filter: `authorships.author.id:${authorId}`,
+    sort: "cited_by_count:desc",
+    per_page: "50",
+    select: "authorships",
+  });
+
+  const coauthorMap = new Map<string, { name: string; count: number; id: string }>();
+  const fullAuthorId = `https://openalex.org/${authorId}`;
+
+  for (const work of res.results) {
+    for (const authorship of work.authorships || []) {
+      if (!authorship.author?.id || authorship.author.id === fullAuthorId) continue;
+      const existing = coauthorMap.get(authorship.author.id);
+      if (existing) {
+        existing.count++;
+      } else {
+        coauthorMap.set(authorship.author.id, {
+          name: authorship.author.display_name,
+          count: 1,
+          id: stripOpenAlexId(authorship.author.id),
+        });
+      }
+    }
+  }
+
+  return Array.from(coauthorMap.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 20);
 }

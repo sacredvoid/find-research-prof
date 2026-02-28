@@ -55,6 +55,7 @@ export default function SearchBar({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          maxLength={200}
           placeholder={
             type === "topic"
               ? "e.g. computational neuroscience, gene therapy, climate modeling..."

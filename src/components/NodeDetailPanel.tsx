@@ -1,13 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { GraphNode, GraphLink } from "@/types";
-
-function formatNumber(n: number): string {
-  if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
-  if (n >= 1000) return (n / 1000).toFixed(1) + "k";
-  return n.toLocaleString();
-}
+import { formatNumber } from "@/lib/utils";
+import MetricBadge from "@/components/MetricBadge";
 
 interface Collaborator {
   id: string;
@@ -56,9 +53,14 @@ export default function NodeDetailPanel({
   links: GraphLink[];
   nodes: GraphNode[];
 }) {
-  if (!node) return null;
+  const nodeMap = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
 
-  const collaborators = getCollaborators(node.id, links, nodes);
+  const collaborators = useMemo(() => {
+    if (!node) return [];
+    return getCollaborators(node.id, links, nodes);
+  }, [node, links, nodes]);
+
+  if (!node) return null;
 
   return (
     <>
@@ -107,18 +109,9 @@ export default function NodeDetailPanel({
 
           {/* Metrics */}
           <div className="mt-3 flex flex-wrap gap-1.5 sm:gap-2 font-mono text-sm tabular-nums">
-            <span className="bg-gold-bg px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md">
-              <span className="text-gold font-semibold">{node.hIndex}</span>
-              <span className="text-gold-muted font-sans text-xs ml-1">h-index</span>
-            </span>
-            <span className="bg-gold-bg px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md">
-              <span className="text-gold font-semibold">{formatNumber(node.citedByCount)}</span>
-              <span className="text-gold-muted font-sans text-xs ml-1">citations</span>
-            </span>
-            <span className="bg-gold-bg px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md">
-              <span className="text-gold font-semibold">{formatNumber(node.worksCount)}</span>
-              <span className="text-gold-muted font-sans text-xs ml-1">works</span>
-            </span>
+            <MetricBadge label="h-index" value={node.hIndex} compact />
+            <MetricBadge label="citations" value={formatNumber(node.citedByCount)} compact />
+            <MetricBadge label="works" value={formatNumber(node.worksCount)} compact />
           </div>
 
           {/* Mobile: two-column layout for topics + collaborators */}
@@ -150,7 +143,7 @@ export default function NodeDetailPanel({
                 </h4>
                 <div className="space-y-1 sm:space-y-1.5">
                   {collaborators.map((collab) => {
-                    const collabNode = nodes.find((n) => n.id === collab.id);
+                    const collabNode = nodeMap.get(collab.id);
                     return (
                       <button
                         key={collab.id}

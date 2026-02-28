@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useRef, useEffect, useState } from "react";
 import { GraphData, GraphNode } from "@/types";
+import { escapeHtml } from "@/lib/utils";
 
 const ForceGraph3D = dynamic(() => import("react-force-graph-3d"), {
   ssr: false,
@@ -113,10 +114,10 @@ export default function NetworkGraph({
           nodeLabel={(node: object) => {
             const n = node as GraphNode;
             return `<div style="background: rgba(28,25,23,0.92); color: white; padding: 8px 12px; border-radius: 8px; font-size: 13px; max-width: 250px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-              <div style="font-weight: 600;">${n.name}</div>
-              <div style="opacity: 0.7; font-size: 11px; margin-top: 2px;">${n.institution}</div>
+              <div style="font-weight: 600;">${escapeHtml(n.name)}</div>
+              <div style="opacity: 0.7; font-size: 11px; margin-top: 2px;">${escapeHtml(n.institution)}</div>
               <div style="opacity: 0.7; font-size: 11px;">h-index: ${n.hIndex} · ${n.citedByCount.toLocaleString()} citations</div>
-              <div style="opacity: 0.5; font-size: 10px; margin-top: 2px;">${n.field}</div>
+              <div style="opacity: 0.5; font-size: 10px; margin-top: 2px;">${escapeHtml(n.field)}</div>
             </div>`;
           }}
           nodeColor={(node: object) => {

@@ -74,7 +74,6 @@ export interface OpenAlexTopic {
 
 export interface SearchFilters {
   country?: string;
-  institution?: string;
   minCitations?: number;
   minWorks?: number;
   sortBy?: "cited_by_count" | "works_count" | "relevance";
@@ -92,10 +91,7 @@ export interface Professor {
   worksCount: number;
   citedByCount: number;
   orcid: string | null;
-  scholarUrl: string | null;
   openAlexUrl: string;
-  recentWork: string | null;
-  recentWorkYear: number | null;
 }
 
 export interface GraphNode {

@@ -53,6 +53,7 @@ export default function ExploreSearch({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          maxLength={200}
           placeholder={
             type === "topic"
               ? "e.g. machine learning, climate change..."

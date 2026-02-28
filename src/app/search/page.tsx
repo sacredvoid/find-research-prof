@@ -4,12 +4,8 @@ import SearchBar from "@/components/SearchBar";
 import ProfessorCard from "@/components/ProfessorCard";
 import Link from "next/link";
 import { SearchFilters } from "@/types";
-
-function formatNumber(n: number): string {
-  if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
-  if (n >= 1000) return (n / 1000).toFixed(1) + "k";
-  return n.toLocaleString();
-}
+import { formatNumber, buildQueryString } from "@/lib/utils";
+import { COUNTRIES, SEARCH_PAGE_SIZE } from "@/lib/config";
 
 export async function generateMetadata({
   searchParams,
@@ -100,24 +96,7 @@ export default async function SearchPage({
     searchError = true;
   }
 
-  const COUNTRY_OPTIONS = [
-    { code: "", label: "All countries" },
-    { code: "US", label: "United States" },
-    { code: "GB", label: "United Kingdom" },
-    { code: "CA", label: "Canada" },
-    { code: "DE", label: "Germany" },
-    { code: "CN", label: "China" },
-    { code: "JP", label: "Japan" },
-    { code: "AU", label: "Australia" },
-    { code: "FR", label: "France" },
-    { code: "NL", label: "Netherlands" },
-    { code: "CH", label: "Switzerland" },
-    { code: "IN", label: "India" },
-    { code: "KR", label: "South Korea" },
-    { code: "SE", label: "Sweden" },
-    { code: "SG", label: "Singapore" },
-    { code: "IL", label: "Israel" },
-  ];
+  const COUNTRY_OPTIONS = COUNTRIES;
 
   const CITATION_OPTIONS = [
     { value: "", label: "Any" },
@@ -135,20 +114,15 @@ export default async function SearchPage({
   ];
 
   function buildFilterUrl(overrides: Record<string, string>) {
-    const base: Record<string, string> = {
+    return `/search?${buildQueryString({
       q: query,
       type: searchType,
-    };
-    if (params.country) base.country = params.country;
-    if (params.minCitations) base.minCitations = params.minCitations;
-    if (params.minWorks) base.minWorks = params.minWorks;
-    if (params.sortBy) base.sortBy = params.sortBy;
-    const merged = { ...base, ...overrides };
-    for (const key of Object.keys(merged)) {
-      if (!merged[key]) delete merged[key];
-    }
-    const sp = new URLSearchParams(merged);
-    return `/search?${sp.toString()}`;
+      country: params.country || "",
+      minCitations: params.minCitations || "",
+      minWorks: params.minWorks || "",
+      sortBy: params.sortBy || "",
+      ...overrides,
+    })}`;
   }
 
   return (
@@ -295,7 +269,7 @@ export default async function SearchPage({
                 <span className="text-ink-tertiary font-mono text-xs px-2">
                   page {page}
                 </span>
-                {professors.length === 25 && (
+                {professors.length === SEARCH_PAGE_SIZE && (
                   <Link
                     href={buildFilterUrl({ page: (page + 1).toString() })}
                     className="text-accent hover:text-accent-hover bg-accent-bg hover:bg-accent-border px-3 py-1.5 rounded-md font-medium transition-all"

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import ExplorePageClient from "@/components/ExplorePageClient";
 
 export const metadata: Metadata = {
@@ -22,5 +23,13 @@ export const metadata: Metadata = {
 };
 
 export default function ExplorePage() {
-  return <ExplorePageClient />;
+  return (
+    <Suspense fallback={
+      <main className="h-[calc(100vh-49px)] flex items-center justify-center text-ink-tertiary text-sm">
+        Loading explorer...
+      </main>
+    }>
+      <ExplorePageClient />
+    </Suspense>
+  );
 }

@@ -1,7 +1,7 @@
 import { GraphNode, GraphLink, GraphData, OpenAlexWork, OpenAlexAuthor } from "@/types";
+import { OPENALEX_BASE_URL, OPENALEX_MAILTO, MAX_GRAPH_NODES } from "@/lib/config";
+import { stripOpenAlexId } from "@/lib/utils";
 
-const BASE_URL = "https://api.openalex.org";
-const MAILTO = "researchprof@example.com";
 const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 // Browser-level cache to avoid redundant API calls during exploration
@@ -20,8 +20,8 @@ async function cachedFetch<T>(url: string): Promise<T> {
 }
 
 function buildUrl(path: string, params: Record<string, string> = {}): string {
-  const url = new URL(`${BASE_URL}${path}`);
-  url.searchParams.set("mailto", MAILTO);
+  const url = new URL(`${OPENALEX_BASE_URL}${path}`);
+  url.searchParams.set("mailto", OPENALEX_MAILTO);
   for (const [key, value] of Object.entries(params)) {
     if (value) url.searchParams.set(key, value);
   }
@@ -39,7 +39,7 @@ function authorToNode(author: OpenAlexAuthor): GraphNode {
   }));
 
   return {
-    id: author.id.replace("https://openalex.org/", ""),
+    id: stripOpenAlexId(author.id),
     name: author.display_name,
     institution: institution?.display_name || "Unknown",
     country: institution?.country_code || "",
@@ -61,7 +61,7 @@ function extractCoauthorEdges(
 
   for (const work of works) {
     const authors = (work.authorships || [])
-      .map((a) => a.author?.id?.replace("https://openalex.org/", ""))
+      .map((a) => a.author?.id ? stripOpenAlexId(a.author.id) : undefined)
       .filter((id): id is string => !!id && nodeIds.has(id));
 
     // Create edges between all co-author pairs in this work
@@ -102,7 +102,7 @@ export async function buildAuthorGraph(authorId: string): Promise<GraphData> {
   const coauthorMap = new Map<string, { name: string; count: number; institutions: string[] }>();
   for (const work of works) {
     for (const authorship of work.authorships || []) {
-      const id = authorship.author?.id?.replace("https://openalex.org/", "");
+      const id = authorship.author?.id ? stripOpenAlexId(authorship.author.id) : undefined;
       if (!id || id === authorId) continue;
       const existing = coauthorMap.get(id);
       if (existing) {
@@ -152,10 +152,10 @@ export async function buildTopicGraph(query: string): Promise<GraphData & { topi
   );
 
   const topic = topicsRes.results?.[0];
-  const topicId = topic?.id?.replace("https://openalex.org/", "");
+  const topicId = topic?.id ? stripOpenAlexId(topic.id) : undefined;
 
   let authorIds: string[];
-  let topicName: string | null = topic?.display_name || null;
+  const topicName: string | null = topic?.display_name || null;
 
   if (topicId) {
     // Get top 30 authors in this topic
@@ -201,7 +201,7 @@ export async function buildTopicGraph(query: string): Promise<GraphData & { topi
   const authorCounts = new Map<string, { name: string; count: number }>();
   for (const work of worksRes.results) {
     for (const authorship of work.authorships || []) {
-      const id = authorship.author?.id?.replace("https://openalex.org/", "");
+      const id = authorship.author?.id ? stripOpenAlexId(authorship.author.id) : undefined;
       if (!id) continue;
       const existing = authorCounts.get(id);
       if (existing) existing.count++;
@@ -235,6 +235,10 @@ export async function buildTopicGraph(query: string): Promise<GraphData & { topi
 export async function expandNode(authorId: string, existingNodeIds: Set<string>): Promise<GraphData> {
   if (!/^A\d+$/.test(authorId)) throw new Error("Invalid author ID");
 
+  if (existingNodeIds.size >= MAX_GRAPH_NODES) {
+    throw new Error(`Graph limit reached (${MAX_GRAPH_NODES} nodes). Reset the graph to explore a new network.`);
+  }
+
   // Fetch works for this author
   const worksRes = await cachedFetch<{ results: OpenAlexWork[] }>(
     buildUrl("/works", {
@@ -249,7 +253,7 @@ export async function expandNode(authorId: string, existingNodeIds: Set<string>)
   const newCoauthors = new Map<string, { name: string; count: number; institutions: string[] }>();
   for (const work of worksRes.results) {
     for (const authorship of work.authorships || []) {
-      const id = authorship.author?.id?.replace("https://openalex.org/", "");
+      const id = authorship.author?.id ? stripOpenAlexId(authorship.author.id) : undefined;
       if (!id || id === authorId || existingNodeIds.has(id)) continue;
       const existing = newCoauthors.get(id);
       if (existing) existing.count++;
