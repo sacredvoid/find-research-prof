@@ -57,7 +57,7 @@ export default function MyListPage() {
   }
 
   return (
-    <main className="max-w-[52rem] mx-auto px-6 py-10">
+    <main className="max-w-6xl mx-auto px-6 py-10">
       <div className="flex items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-ink tracking-tight">

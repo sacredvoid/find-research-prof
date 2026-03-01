@@ -94,7 +94,7 @@ const TYPE_STYLES = {
 
 export default function ChangelogPage() {
   return (
-    <main className="max-w-[40rem] mx-auto px-6 py-12">
+    <main className="max-w-4xl mx-auto px-6 py-12">
       <div className="mb-10">
         <h1 className="text-2xl font-bold text-ink tracking-tight mb-2">Changelog</h1>
         <p className="text-ink-secondary text-sm">

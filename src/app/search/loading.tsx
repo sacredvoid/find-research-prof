@@ -6,7 +6,7 @@ const RESULT_TOPIC_WIDTHS = ["75%", "85%", "65%", "80%", "70%", "90%", "60%", "7
 
 export default function SearchLoading() {
   return (
-    <main className="max-w-[52rem] mx-auto px-6 py-6">
+    <main className="max-w-6xl mx-auto px-6 py-6">
       {/* Search bar skeleton */}
       <div className="mb-6">
         <div className="w-full max-w-2xl mx-auto">

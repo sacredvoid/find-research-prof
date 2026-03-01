@@ -110,7 +110,7 @@ export default async function ProfessorPage({
   }
 
   return (
-    <main className="max-w-[52rem] mx-auto px-6 py-10">
+    <main className="max-w-5xl mx-auto px-6 py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(personJsonLd) }}

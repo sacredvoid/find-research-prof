@@ -22,7 +22,7 @@ export default async function ComparePage({
 
   if (idList.length < 2) {
     return (
-      <main className="max-w-[52rem] mx-auto px-6 py-10">
+      <main className="max-w-6xl mx-auto px-6 py-10">
         <h1 className="text-2xl font-bold text-ink tracking-tight mb-4">
           Compare Professors
         </h1>
@@ -68,7 +68,7 @@ export default async function ComparePage({
   const maxMean = Math.max(...metrics.map((m) => m.meanCitedness));
 
   return (
-    <main className="max-w-[72rem] mx-auto px-6 py-10">
+    <main className="max-w-6xl mx-auto px-6 py-10">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-ink tracking-tight">
           Compare Professors
