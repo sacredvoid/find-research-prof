@@ -1,0 +1,80 @@
+"use client";
+
+import { SavedProfessor, Professor, AcceptingSignal } from "@/types";
+
+const SAVED_KEY = "researchprof_saved";
+const SIGNALS_KEY = "researchprof_accepting";
+
+// --- Saved Professors ---
+
+export function getSavedProfessors(): SavedProfessor[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(SAVED_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveProfessor(professor: Professor): void {
+  const list = getSavedProfessors();
+  if (list.some((p) => p.id === professor.id)) return;
+  const saved: SavedProfessor = {
+    ...professor,
+    savedAt: Date.now(),
+    notes: "",
+    emailStatus: "none",
+  };
+  list.push(saved);
+  localStorage.setItem(SAVED_KEY, JSON.stringify(list));
+  window.dispatchEvent(new Event("saved-professors-changed"));
+}
+
+export function unsaveProfessor(id: string): void {
+  const list = getSavedProfessors().filter((p) => p.id !== id);
+  localStorage.setItem(SAVED_KEY, JSON.stringify(list));
+  window.dispatchEvent(new Event("saved-professors-changed"));
+}
+
+export function isProfessorSaved(id: string): boolean {
+  return getSavedProfessors().some((p) => p.id === id);
+}
+
+export function updateSavedProfessor(
+  id: string,
+  updates: Partial<Pick<SavedProfessor, "notes" | "emailStatus">>
+): void {
+  const list = getSavedProfessors();
+  const idx = list.findIndex((p) => p.id === id);
+  if (idx === -1) return;
+  list[idx] = { ...list[idx], ...updates };
+  localStorage.setItem(SAVED_KEY, JSON.stringify(list));
+  window.dispatchEvent(new Event("saved-professors-changed"));
+}
+
+// --- Accepting Students Signals ---
+
+export function getSignals(): AcceptingSignal[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(SIGNALS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function addSignal(signal: AcceptingSignal): void {
+  const list = getSignals();
+  // Replace existing signal for same professor+semester
+  const filtered = list.filter(
+    (s) => !(s.professorId === signal.professorId && s.semester === signal.semester)
+  );
+  filtered.push(signal);
+  localStorage.setItem(SIGNALS_KEY, JSON.stringify(filtered));
+}
+
+export function getSignalsForProfessor(professorId: string): AcceptingSignal[] {
+  return getSignals().filter((s) => s.professorId === professorId);
+}

@@ -51,6 +51,7 @@ function authorToProfessor(author: OpenAlexAuthor): Professor {
     citedByCount: author.cited_by_count || 0,
     orcid: author.ids?.orcid || null,
     openAlexUrl: author.id,
+    updatedDate: author.updated_date || "",
   };
 }
 
@@ -210,6 +211,47 @@ export async function getAuthorWorks(
     page: page.toString(),
   });
   return { works: res.results, totalCount: res.meta.count };
+}
+
+export async function searchByInstitution(
+  query: string,
+  filters: SearchFilters = {},
+  page: number = 1
+): Promise<{ professors: Professor[]; totalCount: number; topicName: string | null; institutionName: string | null }> {
+  const instRes = await fetchOpenAlex<{
+    results: { id: string; display_name: string }[];
+  }>("/institutions", {
+    search: query,
+    per_page: "1",
+  });
+
+  const inst = instRes.results?.[0];
+  if (!inst) {
+    return { professors: [], totalCount: 0, topicName: null, institutionName: null };
+  }
+
+  const instId = stripOpenAlexId(inst.id);
+  const filterParts = buildAuthorFilters(filters, [
+    `last_known_institutions.id:${instId}`,
+    "works_count:>5",
+  ]);
+
+  const authorsRes = await fetchOpenAlex<{
+    results: OpenAlexAuthor[];
+    meta: { count: number };
+  }>("/authors", {
+    filter: filterParts.join(","),
+    sort: authorSortParam(filters),
+    per_page: SEARCH_PAGE_SIZE.toString(),
+    page: page.toString(),
+  });
+
+  return {
+    professors: authorsRes.results.map(authorToProfessor),
+    totalCount: authorsRes.meta.count,
+    topicName: null,
+    institutionName: inst.display_name,
+  };
 }
 
 export async function getAuthorCoauthors(

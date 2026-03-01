@@ -6,7 +6,11 @@ import { Suspense } from "react";
 import PublicationFilters from "@/components/PublicationFilters";
 import MetricBadge from "@/components/MetricBadge";
 import SectionHeading from "@/components/SectionHeading";
-import { formatNumber, safeJsonLd, buildQueryString } from "@/lib/utils";
+import SaveButton from "@/components/SaveButton";
+import ShareButtons from "@/components/ShareButtons";
+import EmailGenerator from "@/components/EmailGenerator";
+import AcceptingStudents from "@/components/AcceptingStudents";
+import { formatNumber, safeJsonLd, buildQueryString, stripOpenAlexId } from "@/lib/utils";
 import { countryCodeToName, PROFESSOR_PAGE_SIZE, SITE_URL } from "@/lib/config";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -113,9 +117,34 @@ export default async function ProfessorPage({
       />
       {/* Header */}
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-ink tracking-tight leading-tight">
-          {author.display_name}
-        </h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-3xl font-bold text-ink tracking-tight leading-tight">
+            {author.display_name}
+          </h1>
+          <div className="flex items-center gap-2 shrink-0 mt-1">
+            <SaveButton
+              professor={{
+                id,
+                name: author.display_name,
+                institution: institution?.display_name || "Unknown",
+                country: countryCodeToName(institution?.country_code || ""),
+                countryCode: institution?.country_code || "",
+                department: topics[0]?.field?.display_name || "",
+                topics: topics.slice(0, 5).map((t) => ({ name: t.display_name, id: stripOpenAlexId(t.id) })),
+                hIndex: author.summary_stats?.h_index || 0,
+                worksCount: author.works_count || 0,
+                citedByCount: author.cited_by_count || 0,
+                orcid: orcidUrl,
+                openAlexUrl: author.id,
+                updatedDate: author.updated_date || "",
+              }}
+            />
+            <ShareButtons
+              url={`/professor/${id}`}
+              title={`${author.display_name} — ResearchProf`}
+            />
+          </div>
+        </div>
         {institution && (
           <p className="text-ink-secondary mt-1">
             {institution.display_name}
@@ -145,7 +174,7 @@ export default async function ProfessorPage({
           />
         </div>
 
-        {/* External links */}
+        {/* External links + Email */}
         <div className="mt-4 flex flex-wrap gap-2 text-sm">
           <ExtLink href={author.id}>OpenAlex</ExtLink>
           {orcidUrl && <ExtLink href={orcidUrl}>ORCID</ExtLink>}
@@ -161,6 +190,17 @@ export default async function ProfessorPage({
               Lab page
             </ExtLink>
           )}
+          <EmailGenerator
+            professorName={author.display_name}
+            institution={institution?.display_name || ""}
+            topics={topics.slice(0, 5).map((t) => ({ name: t.display_name }))}
+            recentPaperTitle={works[0]?.title || undefined}
+          />
+        </div>
+
+        {/* Accepting Students */}
+        <div className="mt-4">
+          <AcceptingStudents professorId={id} />
         </div>
       </header>
 
