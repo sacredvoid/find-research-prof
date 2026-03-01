@@ -14,6 +14,22 @@ interface ChangelogEntry {
 
 const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-03-01",
+    version: "0.3.0",
+    changes: [
+      { type: "added", text: "My List — save professors, add notes, and track email status (sent, replied, etc.)" },
+      { type: "added", text: "Cold email draft generator — context-aware templates using the professor's actual papers and topics" },
+      { type: "added", text: "Side-by-side professor comparison with topic overlap analysis" },
+      { type: "added", text: "Search by institution — find all researchers at a specific university" },
+      { type: "added", text: "\"Accepting Students\" signal — crowdsourced reports on professor availability" },
+      { type: "added", text: "Export search results to CSV" },
+      { type: "added", text: "Share buttons on professor profiles (copy link, X, LinkedIn)" },
+      { type: "added", text: "Active Researcher badge on profiles updated in the last 2 years" },
+      { type: "added", text: "Save/bookmark button on search result cards" },
+      { type: "improved", text: "Navbar now includes quick access to My List" },
+    ],
+  },
+  {
     date: "2026-02-28",
     version: "0.2.0",
     changes: [

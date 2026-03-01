@@ -76,11 +76,20 @@ export default function AboutPage() {
             </p>
           </div>
           <div>
-            <h3 className="font-medium text-ink mb-1">Filter results</h3>
+            <h3 className="font-medium text-ink mb-1">Search by institution</h3>
+            <p className="text-sm">
+              Switch to institution search to find all researchers at a specific
+              university — &ldquo;MIT&rdquo;, &ldquo;Stanford&rdquo;, &ldquo;ETH
+              Zurich&rdquo;. Combine with filters to narrow by country or
+              citations.
+            </p>
+          </div>
+          <div>
+            <h3 className="font-medium text-ink mb-1">Filter &amp; export results</h3>
             <p className="text-sm">
               Narrow down by country, minimum citations, or sort by most cited
-              or most published. Useful when a topic returns hundreds of
-              researchers.
+              or most published. Export any search results to CSV for offline
+              tracking.
             </p>
           </div>
           <div>
@@ -89,7 +98,19 @@ export default function AboutPage() {
               Click any professor to see their full profile — research topics,
               publications (sortable and filterable by year), citation metrics,
               frequent co-authors, and direct links to OpenAlex, ORCID, Google
-              Scholar, and their lab page.
+              Scholar, and their lab page. Draft a cold email, report whether
+              they&rsquo;re accepting students, or share their profile.
+            </p>
+          </div>
+          <div>
+            <h3 className="font-medium text-ink mb-1">Save &amp; compare</h3>
+            <p className="text-sm">
+              Bookmark professors to{" "}
+              <Link href="/my-list" className="text-link hover:text-link-hover transition-colors">
+                My List
+              </Link>
+              , add notes, track your outreach status, and compare up to four
+              professors side by side with topic overlap analysis.
             </p>
           </div>
           <div>
