@@ -15,6 +15,17 @@ interface ChangelogEntry {
 const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-03-01",
+    version: "0.4.0",
+    changes: [
+      { type: "added", text: "Redesigned landing page with full feature showcase, feature grid, and deep-dive sections" },
+      { type: "added", text: "\"Who it's for\" audience section highlighting use cases for students, faculty, researchers, and organizers" },
+      { type: "added", text: "Subtle mesh grid background on the Explore Networks page for spatial depth" },
+      { type: "improved", text: "Wider desktop layout for navbar and content sections" },
+      { type: "improved", text: "Landing page now clearly communicates all features: search, save, compare, export, email drafting, and 3D networks" },
+    ],
+  },
+  {
+    date: "2026-03-01",
     version: "0.3.1",
     changes: [
       { type: "added", text: "CSV export now supports multi-page download with options: current page, top 100, custom count, or all results" },

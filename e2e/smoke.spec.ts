@@ -1,9 +1,11 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Smoke tests - pages load without errors", () => {
-  test("homepage loads", async ({ page }) => {
+  test("homepage loads with feature sections", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator("h1, h2").first()).toBeVisible();
+    await expect(page.locator("h1")).toBeVisible();
+    await expect(page.locator("text=Search & Discover")).toBeVisible();
+    await expect(page.locator("text=Who it")).toBeVisible();
     await expect(page.locator("text=Application error")).not.toBeVisible();
   });
 

@@ -14,44 +14,23 @@ const EXAMPLE_TOPICS = [
 
 export default function Home() {
   return (
-    <main className="min-h-[calc(100vh-49px)] flex flex-col">
-      <div className="flex-1 flex items-center">
-        <div className="max-w-2xl mx-auto px-6 w-full">
-          <div className="mb-8">
-            <p className="text-sm text-accent font-medium mb-3">
-              Find advisors, reviewers, collaborators, or just see who&rsquo;s active in your field.
-            </p>
-            <h1 className="text-2xl font-bold text-ink tracking-tight mb-2">
-              Find professors by research topic
-            </h1>
-            <p className="text-ink-secondary text-[0.95rem] leading-relaxed">
-              Stop juggling Google Scholar, faculty pages, and ResearchGate.
-              Search any research area and instantly see who&rsquo;s publishing
-              in that field — their papers, citations, h-index, and links to
-              reach them. All in one place.
-            </p>
-          </div>
+    <main>
+      {/* Hero */}
+      <section className="py-16 sm:py-24">
+        <div className="max-w-2xl mx-auto px-6">
+          <p className="text-sm text-accent font-medium mb-3">
+            Search 240M+ academic works across every field and country.
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight mb-3">
+            Find the right researcher, faster.
+          </h1>
+          <p className="text-ink-secondary text-[0.95rem] leading-relaxed mb-8">
+            Search by topic, name, or institution. Save professors, draft
+            emails, compare candidates, and explore collaboration networks
+            &mdash; all in one place.
+          </p>
 
           <SearchBar />
-
-          <Link
-            href="/explore"
-            className="mt-4 flex items-center gap-3 text-sm text-left group"
-          >
-            <span className="shrink-0 w-8 h-8 rounded-lg bg-accent-bg flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                <path d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H4.598a.75.75 0 00-.75.75v3.634a.75.75 0 001.5 0v-2.033l.312.311a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.06-7.39a.75.75 0 00-1.5 0v2.033l-.312-.312a7 7 0 00-11.712 3.138.75.75 0 001.449.39A5.5 5.5 0 0113.889 6.11l.311.312H11.767a.75.75 0 000 1.5h3.634a.75.75 0 00.75-.75V3.538l.22.496z" />
-              </svg>
-            </span>
-            <span>
-              <span className="font-medium text-accent group-hover:text-accent-hover transition-colors">
-                Explore Research Networks
-              </span>
-              <span className="block text-ink-tertiary text-xs">
-                Visualize collaboration graphs between researchers in 3D
-              </span>
-            </span>
-          </Link>
 
           <p className="mt-6 text-sm text-ink-tertiary leading-relaxed">
             Try:{" "}
@@ -68,10 +47,204 @@ export default function Home() {
             ))}
           </p>
         </div>
-      </div>
+      </section>
+
+      {/* Feature Grid */}
+      <section className="border-t border-rule py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
+            {/* Search & Discover */}
+            <div>
+              <div className="w-9 h-9 rounded-lg bg-accent-bg flex items-center justify-center text-accent mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                  <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-ink mb-2">Search &amp; Discover</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Find professors by research topic, name, or institution. Filter
+                by country, citations, and sort by relevance.
+              </p>
+            </div>
+
+            {/* Save & Track */}
+            <div>
+              <div className="w-9 h-9 rounded-lg bg-accent-bg flex items-center justify-center text-accent mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                  <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-ink mb-2">Save &amp; Track</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Build your shortlist, add notes, track email status, compare up
+                to 4 professors side by side, and export to CSV.
+              </p>
+            </div>
+
+            {/* Explore Networks */}
+            <div>
+              <div className="w-9 h-9 rounded-lg bg-accent-bg flex items-center justify-center text-accent mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                  <path d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H4.598a.75.75 0 00-.75.75v3.634a.75.75 0 001.5 0v-2.033l.312.311a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.06-7.39a.75.75 0 00-1.5 0v2.033l-.312-.312a7 7 0 00-11.712 3.138.75.75 0 001.449.39A5.5 5.5 0 0113.889 6.11l.311.312H11.767a.75.75 0 000 1.5h3.634a.75.75 0 00.75-.75V3.538l.22.496z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-ink mb-2">Explore Networks</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Visualize collaboration graphs in 3D. See how researchers in a
+                field connect, expand nodes to discover new collaborators.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Deep-Dive: Professor Profiles */}
+      <section className="border-t border-rule py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
+            <div>
+              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+                Rich professor profiles
+              </h2>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Click any professor to see their research topics, publications
+                sorted by year, citation metrics, and frequent co-authors.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Direct links to Google Scholar, ORCID, and their lab page. Draft
+                a cold email in one click, or flag whether they&rsquo;re
+                currently accepting students.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Share any profile with a direct link.
+              </p>
+            </div>
+            <div className="illustration-profiles rounded-xl h-48 sm:h-56" aria-hidden="true" />
+          </div>
+        </div>
+      </section>
+
+      {/* Deep-Dive: Save, Compare & Export */}
+      <section className="border-t border-rule py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
+            <div className="illustration-save rounded-xl h-48 sm:h-56 order-last sm:order-first" aria-hidden="true" />
+            <div>
+              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+                Save, compare &amp; export
+              </h2>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Bookmark professors to your saved list. Add private notes and
+                track your outreach status for each one.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Compare up to four professors side by side with topic overlap
+                analysis to find the best fit.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Export any search results to CSV for offline tracking and
+                sharing.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Deep-Dive: Smart Filtering */}
+      <section className="border-t border-rule py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
+            <div>
+              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+                Smart filtering
+              </h2>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Narrow down results by country, minimum citations, or sort by
+                most cited or most published.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Multi-page export lets you download the top 100, 250, or 500
+                results at once.
+              </p>
+            </div>
+            <div className="illustration-filter rounded-xl h-48 sm:h-56" aria-hidden="true" />
+          </div>
+        </div>
+      </section>
+
+      {/* Deep-Dive: 3D Network Explorer */}
+      <section className="border-t border-rule py-16 sm:py-20 bg-accent-bg/40">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
+            <div className="illustration-network rounded-xl h-48 sm:h-56 order-last sm:order-first" aria-hidden="true" />
+            <div>
+              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+                3D network explorer
+              </h2>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Visualize how the top researchers in any field collaborate.
+                Search a topic to see the network, or search an author to map
+                their co-author connections.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-4">
+                Click any node to expand it, see their research areas, and
+                discover collaborators you might have missed.
+              </p>
+              <Link
+                href="/explore"
+                className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:text-accent-hover transition-colors"
+              >
+                Try the network explorer
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Who It's For */}
+      <section className="border-t border-rule py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <h2 className="text-[0.7rem] font-medium text-ink-tertiary uppercase tracking-widest mb-8">
+            Who it&rsquo;s for
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+            <div>
+              <h3 className="font-semibold text-accent mb-1">Students</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Find research assistantships, PhD advisors, or labs to join by
+                searching your area of interest.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-accent mb-1">Faculty</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Identify reviewers, panelists, or potential collaborators in a
+                specific research niche.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-accent mb-1">Researchers</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Audit your own collaboration network, discover adjacent
+                researchers, and explore how your field connects.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-accent mb-1">Organizers</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Map who&rsquo;s actively publishing in a topic when planning
+                conferences, workshops, or special issues.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <footer className="border-t border-rule">
-        <div className="max-w-2xl mx-auto px-6 py-5 text-xs text-ink-tertiary text-center leading-relaxed">
+        <div className="max-w-5xl mx-auto px-6 py-5 text-xs text-ink-tertiary text-center leading-relaxed">
           Searching 240M+ academic works across all fields and countries.
           <br />
           Data from{" "}

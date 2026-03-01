@@ -60,6 +60,39 @@ body {
   }
 }
 
+/* Abstract illustration shapes for landing page feature sections */
+.illustration-profiles {
+  background:
+    radial-gradient(circle at 30% 30%, var(--color-accent-bg) 0%, transparent 60%),
+    radial-gradient(circle at 70% 60%, var(--color-oa-bg) 0%, transparent 50%);
+}
+.illustration-save {
+  background:
+    linear-gradient(135deg, var(--color-accent-bg) 0%, transparent 40%),
+    linear-gradient(315deg, var(--color-gold-bg) 0%, transparent 40%);
+}
+.illustration-filter {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      var(--color-paper-elevated) 0px,
+      var(--color-paper-elevated) 8px,
+      transparent 8px,
+      transparent 16px
+    ),
+    linear-gradient(90deg, var(--color-accent-bg) 0%, transparent 100%);
+}
+.illustration-network {
+  background:
+    radial-gradient(circle at 20% 40%, var(--color-accent) 2px, transparent 2px),
+    radial-gradient(circle at 50% 25%, var(--color-oa) 3px, transparent 3px),
+    radial-gradient(circle at 75% 55%, var(--color-accent) 2px, transparent 2px),
+    radial-gradient(circle at 40% 70%, var(--color-gold-muted) 2px, transparent 2px),
+    radial-gradient(circle at 65% 80%, var(--color-accent) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 30% 50%, var(--color-oa) 1.5px, transparent 1.5px),
+    linear-gradient(var(--color-accent-bg) 0%, var(--color-paper) 100%);
+}
+
 /* 3D mesh/grid background for explore page graph area */
 .mesh-background {
   background-color: #F5F4F0;
