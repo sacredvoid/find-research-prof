@@ -68,14 +68,34 @@ export function updateSavedProfessor(
 
 // --- Accepting Students Signals ---
 
+// Cache for useSyncExternalStore: must return same reference when data hasn't changed
+let _signalsCache: AcceptingSignal[] = [];
+let _signalsRaw: string | null = null;
+// Per-professor cache to avoid creating new filtered arrays on every getSnapshot call
+let _signalsByProfCache = new Map<string, AcceptingSignal[]>();
+
 export function getSignals(): AcceptingSignal[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(SIGNALS_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (raw !== _signalsRaw) {
+      _signalsRaw = raw;
+      _signalsCache = raw ? JSON.parse(raw) : [];
+      _signalsByProfCache = new Map();
+    }
+    return _signalsCache;
   } catch {
     return [];
   }
+}
+
+function writeSignals(list: AcceptingSignal[]): void {
+  const json = JSON.stringify(list);
+  localStorage.setItem(SIGNALS_KEY, json);
+  _signalsRaw = json;
+  _signalsCache = list;
+  _signalsByProfCache = new Map();
+  window.dispatchEvent(new Event("signals-changed"));
 }
 
 export function addSignal(signal: AcceptingSignal): void {
@@ -85,9 +105,15 @@ export function addSignal(signal: AcceptingSignal): void {
     (s) => !(s.professorId === signal.professorId && s.semester === signal.semester)
   );
   filtered.push(signal);
-  localStorage.setItem(SIGNALS_KEY, JSON.stringify(filtered));
+  writeSignals(filtered);
 }
 
 export function getSignalsForProfessor(professorId: string): AcceptingSignal[] {
-  return getSignals().filter((s) => s.professorId === professorId);
+  // Ensure cache is fresh
+  getSignals();
+  const cached = _signalsByProfCache.get(professorId);
+  if (cached !== undefined) return cached;
+  const filtered = _signalsCache.filter((s) => s.professorId === professorId);
+  _signalsByProfCache.set(professorId, filtered);
+  return filtered;
 }

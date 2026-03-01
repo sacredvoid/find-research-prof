@@ -4,14 +4,16 @@ import { useState, useSyncExternalStore } from "react";
 import { AcceptingSignal } from "@/types";
 import { addSignal, getSignalsForProfessor } from "@/lib/storage";
 
+const EMPTY_SIGNALS: AcceptingSignal[] = [];
+
 function useSignals(professorId: string): AcceptingSignal[] {
   return useSyncExternalStore(
     (callback) => {
-      window.addEventListener("storage", callback);
-      return () => window.removeEventListener("storage", callback);
+      window.addEventListener("signals-changed", callback);
+      return () => window.removeEventListener("signals-changed", callback);
     },
     () => getSignalsForProfessor(professorId),
-    () => [] as AcceptingSignal[]
+    () => EMPTY_SIGNALS
   );
 }
 
@@ -24,7 +26,6 @@ export default function AcceptingStudents({
   const [showForm, setShowForm] = useState(false);
   const [semester, setSemester] = useState("Fall 2026");
   const [note, setNote] = useState("");
-  const [, setTick] = useState(0);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +36,6 @@ export default function AcceptingStudents({
       reporterNote: note.trim(),
     };
     addSignal(signal);
-    setTick((t) => t + 1);
     setShowForm(false);
     setNote("");
   }

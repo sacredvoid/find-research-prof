@@ -61,8 +61,9 @@ export default async function SearchPage({
 }) {
   const params = await searchParams;
   const query = params.q || "";
-  const searchType = params.type || "topic";
-  const page = parseInt(params.page || "1") || 1;
+  const validTypes = ["topic", "name", "institution"];
+  const searchType = validTypes.includes(params.type || "") ? params.type! : "topic";
+  const page = Math.max(1, parseInt(params.page || "1") || 1);
 
   if (!query) {
     return (
@@ -79,7 +80,7 @@ export default async function SearchPage({
     country: params.country || undefined,
     minCitations: params.minCitations ? (parseInt(params.minCitations) || undefined) : undefined,
     minWorks: params.minWorks ? (parseInt(params.minWorks) || undefined) : undefined,
-    sortBy: (params.sortBy as SearchFilters["sortBy"]) || undefined,
+    sortBy: (["cited_by_count", "works_count", "relevance"].includes(params.sortBy || "") ? params.sortBy as SearchFilters["sortBy"] : undefined),
   };
 
   const searchFn = searchType === "name" ? searchByName : searchType === "institution" ? searchByInstitution : searchByTopic;
@@ -244,7 +245,21 @@ export default async function SearchPage({
                 {formatNumber(totalCount)}
               </span>
             </div>
-            <ExportCSV professors={professors} filename={`professors-${query.replace(/\s+/g, "-")}`} />
+            <ExportCSV
+              professors={professors}
+              filename={`professors-${query.replace(/\s+/g, "-")}`}
+              searchContext={{
+                query,
+                searchType,
+                filters: {
+                  country: params.country || "",
+                  minCitations: params.minCitations || "",
+                  minWorks: params.minWorks || "",
+                  sortBy: params.sortBy || "",
+                },
+                totalCount,
+              }}
+            />
           </div>
 
           {searchError ? (

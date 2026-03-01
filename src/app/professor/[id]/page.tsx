@@ -56,7 +56,7 @@ export default async function ProfessorPage({
   const validSorts = ["recent", "cited", "oldest"] as const;
   const sort = validSorts.includes(sp.sort as typeof validSorts[number]) ? (sp.sort as typeof validSorts[number]) : "recent";
   const year = sp.year || "";
-  const page = parseInt(sp.page || "1") || 1;
+  const page = Math.max(1, parseInt(sp.page || "1") || 1);
 
   let author: OpenAlexAuthor;
   let works: OpenAlexWork[];

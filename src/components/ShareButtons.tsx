@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { SITE_URL } from "@/lib/config";
 
 export default function ShareButtons({
   url,
@@ -10,12 +11,20 @@ export default function ShareButtons({
   title: string;
 }) {
   const [copied, setCopied] = useState(false);
-  const fullUrl = typeof window !== "undefined" ? `${window.location.origin}${url}` : url;
+  const [origin, setOrigin] = useState(SITE_URL);
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+
+  const fullUrl = `${origin}${url}`;
 
   async function copyLink(e: React.MouseEvent) {
     e.preventDefault();
+    // Always use live origin for clipboard
+    const liveUrl = `${window.location.origin}${url}`;
     try {
-      await navigator.clipboard.writeText(fullUrl);
+      await navigator.clipboard.writeText(liveUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {

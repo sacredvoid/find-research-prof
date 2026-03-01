@@ -15,6 +15,17 @@ interface ChangelogEntry {
 const CHANGELOG: ChangelogEntry[] = [
   {
     date: "2026-03-01",
+    version: "0.3.1",
+    changes: [
+      { type: "added", text: "CSV export now supports multi-page download with options: current page, top 100, custom count, or all results" },
+      { type: "added", text: "Playwright end-to-end tests and GitHub Actions CI pipeline for automated quality checks" },
+      { type: "fixed", text: "Major bug fix on My List and Professor pages that caused crashes on load" },
+      { type: "fixed", text: "Minor bug fix for save button overlapping metrics text on search result cards" },
+      { type: "fixed", text: "Minor bug fix for share button hydration on professor profiles" },
+    ],
+  },
+  {
+    date: "2026-03-01",
     version: "0.3.0",
     changes: [
       { type: "added", text: "My List — save professors, add notes, and track email status (sent, replied, etc.)" },

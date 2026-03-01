@@ -40,8 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# playwright mcp
+# playwright
 .playwright-mcp/
+/test-results/
+/playwright-report/
+/blob-report/
 
 # screenshots
 *.png
