@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { searchByTopic, searchByName } from "@/lib/openalex";
+import { searchByTopic, searchByName, searchByInstitution } from "@/lib/openalex";
+import ExportCSV from "@/components/ExportCSV";
 import SearchBar from "@/components/SearchBar";
 import ProfessorCard from "@/components/ProfessorCard";
 import Link from "next/link";
@@ -23,7 +24,7 @@ export async function generateMetadata({
     };
   }
 
-  const label = type === "name" ? "professors named" : "professors researching";
+  const label = type === "name" ? "professors named" : type === "institution" ? "professors at" : "professors researching";
   const title = `${query} — Find ${label} ${query}`;
   const description = `Find ${label} "${query}". View their publications, citations, h-index, and collaboration networks on ResearchProf.`;
 
@@ -81,10 +82,11 @@ export default async function SearchPage({
     sortBy: (params.sortBy as SearchFilters["sortBy"]) || undefined,
   };
 
-  const searchFn = searchType === "name" ? searchByName : searchByTopic;
-  let professors: Awaited<ReturnType<typeof searchFn>>["professors"] = [];
+  const searchFn = searchType === "name" ? searchByName : searchType === "institution" ? searchByInstitution : searchByTopic;
+  let professors: Awaited<ReturnType<typeof searchByTopic>>["professors"] = [];
   let totalCount = 0;
   let topicName: string | null = null;
+  let institutionName: string | null = null;
   let searchError = false;
 
   try {
@@ -92,6 +94,7 @@ export default async function SearchPage({
     professors = result.professors;
     totalCount = result.totalCount;
     topicName = result.topicName;
+    if ("institutionName" in result) institutionName = (result as { institutionName: string | null }).institutionName;
   } catch {
     searchError = true;
   }
@@ -131,7 +134,7 @@ export default async function SearchPage({
         <SearchBar
           defaultValue={query}
           size="small"
-          searchType={searchType as "topic" | "name"}
+          searchType={searchType as "topic" | "name" | "institution"}
         />
       </div>
 
@@ -226,17 +229,22 @@ export default async function SearchPage({
 
         {/* Results */}
         <div className="flex-1 min-w-0">
-          <div className="mb-2 flex items-baseline gap-2">
-            <h1 className="text-lg font-semibold text-ink tracking-tight">
-              {topicName ? (
-                <>Professors in {topicName}</>
-              ) : (
-                <>Results for &ldquo;{query}&rdquo;</>
-              )}
-            </h1>
-            <span className="text-xs text-ink-tertiary font-mono tabular-nums">
-              {formatNumber(totalCount)}
-            </span>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="flex items-baseline gap-2">
+              <h1 className="text-lg font-semibold text-ink tracking-tight">
+                {institutionName ? (
+                  <>Professors at {institutionName}</>
+                ) : topicName ? (
+                  <>Professors in {topicName}</>
+                ) : (
+                  <>Results for &ldquo;{query}&rdquo;</>
+                )}
+              </h1>
+              <span className="text-xs text-ink-tertiary font-mono tabular-nums">
+                {formatNumber(totalCount)}
+              </span>
+            </div>
+            <ExportCSV professors={professors} filename={`professors-${query.replace(/\s+/g, "-")}`} />
           </div>
 
           {searchError ? (

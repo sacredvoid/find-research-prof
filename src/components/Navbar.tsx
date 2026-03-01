@@ -12,6 +12,15 @@ export default function Navbar() {
         </Link>
         <div className="flex items-center gap-4">
           <Link
+            href="/my-list"
+            className="text-sm text-accent font-medium hover:text-accent-hover transition-colors flex items-center gap-1"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+              <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+            </svg>
+            My List
+          </Link>
+          <Link
             href="/explore"
             className="text-sm text-accent font-medium hover:text-accent-hover transition-colors"
           >

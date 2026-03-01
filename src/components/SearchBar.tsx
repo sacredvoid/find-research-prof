@@ -10,11 +10,11 @@ export default function SearchBar({
 }: {
   defaultValue?: string;
   size?: "large" | "small";
-  searchType?: "topic" | "name";
+  searchType?: "topic" | "name" | "institution";
 }) {
   const router = useRouter();
   const [query, setQuery] = useState(defaultValue);
-  const [type, setType] = useState(searchType);
+  const [type, setType] = useState<"topic" | "name" | "institution">(searchType);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -49,6 +49,17 @@ export default function SearchBar({
         >
           Search by name
         </button>
+        <button
+          type="button"
+          onClick={() => setType("institution")}
+          className={`px-3 py-1 rounded-full transition-all ${
+            type === "institution"
+              ? "bg-accent text-white font-medium"
+              : "text-ink-tertiary hover:text-ink-secondary hover:bg-paper-elevated"
+          }`}
+        >
+          Search by institution
+        </button>
       </div>
       <div className="relative">
         <input
@@ -59,7 +70,9 @@ export default function SearchBar({
           placeholder={
             type === "topic"
               ? "e.g. computational neuroscience, gene therapy, climate modeling..."
-              : "e.g. Geoffrey Hinton, Jennifer Doudna..."
+              : type === "name"
+                ? "e.g. Geoffrey Hinton, Jennifer Doudna..."
+                : "e.g. MIT, Stanford University, ETH Zurich..."
           }
           className={`w-full bg-paper-inset border border-rule rounded-lg text-ink placeholder-ink-tertiary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent-border transition-all ${
             isLarge ? "pl-5 pr-14 py-4 text-lg" : "pl-4 pr-12 py-2.5 text-base"

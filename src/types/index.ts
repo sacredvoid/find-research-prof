@@ -92,6 +92,20 @@ export interface Professor {
   citedByCount: number;
   orcid: string | null;
   openAlexUrl: string;
+  updatedDate: string;
+}
+
+export interface SavedProfessor extends Professor {
+  savedAt: number;
+  notes: string;
+  emailStatus: "none" | "drafted" | "sent" | "replied" | "no-response";
+}
+
+export interface AcceptingSignal {
+  professorId: string;
+  semester: string;
+  reportedAt: number;
+  reporterNote: string;
 }
 
 export interface GraphNode {
