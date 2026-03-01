@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <main>
       {/* Hero */}
-      <section className="py-16 sm:py-24">
+      <section className="py-12 sm:py-20">
         <div className="max-w-2xl mx-auto px-6">
           <p className="text-sm text-accent font-medium mb-3">
             Search 240M+ academic works across every field and country.
@@ -50,9 +50,9 @@ export default function Home() {
       </section>
 
       {/* Feature Grid */}
-      <section className="border-t border-rule py-16 sm:py-20">
+      <section className="border-t border-rule py-12 sm:py-16">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12">
             {/* Search & Discover */}
             <div>
               <div className="w-9 h-9 rounded-lg bg-accent-bg flex items-center justify-center text-accent mb-4">
@@ -98,101 +98,67 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Deep-Dive: Professor Profiles */}
-      <section className="border-t border-rule py-16 sm:py-20">
+      {/* Feature Deep-Dives */}
+      <section className="border-t border-rule py-12 sm:py-16">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
-            <div>
-              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
+            {/* Professor Profiles */}
+            <div className="border-l-2 border-accent pl-5">
+              <h2 className="text-lg font-bold text-ink tracking-tight mb-2">
                 Rich professor profiles
               </h2>
-              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
-                Click any professor to see their research topics, publications
-                sorted by year, citation metrics, and frequent co-authors.
-              </p>
-              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
-                Direct links to Google Scholar, ORCID, and their lab page. Draft
-                a cold email in one click, or flag whether they&rsquo;re
-                currently accepting students.
+              <p className="text-sm text-ink-secondary leading-relaxed mb-2">
+                Research topics, publications sorted by year, citation metrics,
+                and frequent co-authors. Direct links to Google Scholar, ORCID,
+                and lab pages.
               </p>
               <p className="text-sm text-ink-secondary leading-relaxed">
-                Share any profile with a direct link.
+                Draft a cold email in one click, flag whether they&rsquo;re
+                accepting students, or share any profile with a direct link.
               </p>
             </div>
-            <div className="illustration-profiles rounded-xl h-48 sm:h-56" aria-hidden="true" />
-          </div>
-        </div>
-      </section>
 
-      {/* Deep-Dive: Save, Compare & Export */}
-      <section className="border-t border-rule py-16 sm:py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
-            <div className="illustration-save rounded-xl h-48 sm:h-56 order-last sm:order-first" aria-hidden="true" />
-            <div>
-              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+            {/* Save, Compare & Export */}
+            <div className="border-l-2 border-accent pl-5">
+              <h2 className="text-lg font-bold text-ink tracking-tight mb-2">
                 Save, compare &amp; export
               </h2>
-              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
-                Bookmark professors to your saved list. Add private notes and
-                track your outreach status for each one.
-              </p>
-              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
-                Compare up to four professors side by side with topic overlap
-                analysis to find the best fit.
+              <p className="text-sm text-ink-secondary leading-relaxed mb-2">
+                Bookmark professors, add private notes, and track your outreach
+                status. Compare up to four side by side with topic overlap
+                analysis.
               </p>
               <p className="text-sm text-ink-secondary leading-relaxed">
                 Export any search results to CSV for offline tracking and
                 sharing.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Deep-Dive: Smart Filtering */}
-      <section className="border-t border-rule py-16 sm:py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
-            <div>
-              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+            {/* Smart Filtering */}
+            <div className="border-l-2 border-accent pl-5">
+              <h2 className="text-lg font-bold text-ink tracking-tight mb-2">
                 Smart filtering
               </h2>
-              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
-                Narrow down results by country, minimum citations, or sort by
-                most cited or most published.
-              </p>
               <p className="text-sm text-ink-secondary leading-relaxed">
-                Multi-page export lets you download the top 100, 250, or 500
-                results at once.
+                Narrow down by country, minimum citations, or sort by most cited
+                or most published. Multi-page export lets you download the top
+                100, 250, or 500 results at once.
               </p>
             </div>
-            <div className="illustration-filter rounded-xl h-48 sm:h-56" aria-hidden="true" />
-          </div>
-        </div>
-      </section>
 
-      {/* Deep-Dive: 3D Network Explorer */}
-      <section className="border-t border-rule py-16 sm:py-20 bg-accent-bg/40">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
-            <div className="illustration-network rounded-xl h-48 sm:h-56 order-last sm:order-first" aria-hidden="true" />
-            <div>
-              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+            {/* 3D Network Explorer */}
+            <div className="border-l-2 border-accent pl-5">
+              <h2 className="text-lg font-bold text-ink tracking-tight mb-2">
                 3D network explorer
               </h2>
-              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
-                Visualize how the top researchers in any field collaborate.
-                Search a topic to see the network, or search an author to map
-                their co-author connections.
-              </p>
-              <p className="text-sm text-ink-secondary leading-relaxed mb-4">
-                Click any node to expand it, see their research areas, and
-                discover collaborators you might have missed.
+              <p className="text-sm text-ink-secondary leading-relaxed mb-2">
+                Visualize how top researchers in any field collaborate. Search a
+                topic to see the network, or search an author to map their
+                co-author connections.
               </p>
               <Link
                 href="/explore"
-                className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:text-accent-hover transition-colors"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent-hover transition-colors"
               >
                 Try the network explorer
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -205,12 +171,12 @@ export default function Home() {
       </section>
 
       {/* Who It's For */}
-      <section className="border-t border-rule py-16 sm:py-20">
+      <section className="border-t border-rule py-12 sm:py-16">
         <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-[0.7rem] font-medium text-ink-tertiary uppercase tracking-widest mb-8">
+          <h2 className="text-[0.7rem] font-medium text-ink-tertiary uppercase tracking-widest mb-6">
             Who it&rsquo;s for
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8">
             <div>
               <h3 className="font-semibold text-accent mb-1">Students</h3>
               <p className="text-sm text-ink-secondary leading-relaxed">
