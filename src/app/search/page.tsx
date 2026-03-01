@@ -67,7 +67,7 @@ export default async function SearchPage({
 
   if (!query) {
     return (
-      <main className="max-w-[52rem] mx-auto px-6 py-12">
+      <main className="max-w-6xl mx-auto px-6 py-12">
         <SearchBar />
         <p className="text-center text-ink-tertiary mt-8 text-sm">
           Enter a search query to find professors.
@@ -130,7 +130,7 @@ export default async function SearchPage({
   }
 
   return (
-    <main className="max-w-[52rem] mx-auto px-6 py-6">
+    <main className="max-w-6xl mx-auto px-6 py-6">
       <div className="mb-6">
         <SearchBar
           defaultValue={query}
@@ -230,8 +230,8 @@ export default async function SearchPage({
 
         {/* Results */}
         <div className="flex-1 min-w-0">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <div className="flex items-baseline gap-2">
+          <div className="mb-4">
+            <div className="flex items-baseline gap-2 mb-2">
               <h1 className="text-lg font-semibold text-ink tracking-tight">
                 {institutionName ? (
                   <>Professors at {institutionName}</>
@@ -245,21 +245,23 @@ export default async function SearchPage({
                 {formatNumber(totalCount)}
               </span>
             </div>
-            <ExportCSV
-              professors={professors}
-              filename={`professors-${query.replace(/\s+/g, "-")}`}
-              searchContext={{
-                query,
-                searchType,
-                filters: {
-                  country: params.country || "",
-                  minCitations: params.minCitations || "",
-                  minWorks: params.minWorks || "",
-                  sortBy: params.sortBy || "",
-                },
-                totalCount,
-              }}
-            />
+            {professors.length > 0 && (
+              <ExportCSV
+                professors={professors}
+                filename={`professors-${query.replace(/\s+/g, "-")}`}
+                searchContext={{
+                  query,
+                  searchType,
+                  filters: {
+                    country: params.country || "",
+                    minCitations: params.minCitations || "",
+                    minWorks: params.minWorks || "",
+                    sortBy: params.sortBy || "",
+                  },
+                  totalCount,
+                }}
+              />
+            )}
           </div>
 
           {searchError ? (
