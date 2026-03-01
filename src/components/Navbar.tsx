@@ -6,8 +6,27 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
         <Link
           href="/"
-          className="text-ink font-semibold tracking-tight hover:text-link transition-colors shrink-0"
+          className="flex items-center gap-2 text-ink font-semibold tracking-tight hover:text-link transition-colors shrink-0"
         >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="text-accent"
+          >
+            {/* Connection lines */}
+            <line x1="6" y1="6" x2="18" y2="6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="6" y1="6" x2="10" y2="18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="18" y1="6" x2="10" y2="18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="10" y1="18" x2="20" y2="16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            {/* Nodes */}
+            <circle cx="6" cy="6" r="2.5" fill="currentColor" />
+            <circle cx="18" cy="6" r="2.5" fill="currentColor" />
+            <circle cx="10" cy="18" r="2.5" fill="currentColor" />
+            <circle cx="20" cy="16" r="2" fill="currentColor" opacity="0.6" />
+          </svg>
           ResearchProf
         </Link>
         <div className="flex items-center gap-3 sm:gap-4">

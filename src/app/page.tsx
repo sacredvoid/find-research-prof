@@ -16,8 +16,36 @@ export default function Home() {
   return (
     <main>
       {/* Hero */}
-      <section className="py-12 sm:py-20">
-        <div className="max-w-2xl mx-auto px-6">
+      <section className="relative py-12 sm:py-20 overflow-hidden">
+        {/* Floating gradient orbs */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div
+            className="absolute -top-20 -left-20 w-[500px] h-[500px] rounded-full"
+            style={{
+              background: "radial-gradient(circle, rgba(59,130,246,0.35) 0%, rgba(59,130,246,0.08) 40%, transparent 70%)",
+              filter: "blur(60px)",
+              animation: "float-orb-1 14s ease-in-out infinite",
+            }}
+          />
+          <div
+            className="absolute -top-10 -right-16 w-[450px] h-[450px] rounded-full"
+            style={{
+              background: "radial-gradient(circle, rgba(99,102,241,0.30) 0%, rgba(99,102,241,0.06) 40%, transparent 70%)",
+              filter: "blur(60px)",
+              animation: "float-orb-2 18s ease-in-out infinite",
+            }}
+          />
+          <div
+            className="absolute top-1/3 left-1/4 w-[400px] h-[400px] rounded-full"
+            style={{
+              background: "radial-gradient(circle, rgba(20,184,166,0.25) 0%, rgba(20,184,166,0.05) 40%, transparent 70%)",
+              filter: "blur(60px)",
+              animation: "float-orb-3 22s ease-in-out infinite",
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-2xl mx-auto px-6">
           <p className="text-sm text-accent font-medium mb-3">
             Search 240M+ academic works across every field and country.
           </p>
