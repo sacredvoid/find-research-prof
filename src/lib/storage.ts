@@ -7,14 +7,30 @@ const SIGNALS_KEY = "researchprof_accepting";
 
 // --- Saved Professors ---
 
+// Cache for useSyncExternalStore: must return same reference when data hasn't changed
+let _savedCache: SavedProfessor[] = [];
+let _savedRaw: string | null = null;
+
 export function getSavedProfessors(): SavedProfessor[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(SAVED_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (raw !== _savedRaw) {
+      _savedRaw = raw;
+      _savedCache = raw ? JSON.parse(raw) : [];
+    }
+    return _savedCache;
   } catch {
     return [];
   }
+}
+
+function writeSaved(list: SavedProfessor[]): void {
+  const json = JSON.stringify(list);
+  localStorage.setItem(SAVED_KEY, json);
+  _savedRaw = json;
+  _savedCache = list;
+  window.dispatchEvent(new Event("saved-professors-changed"));
 }
 
 export function saveProfessor(professor: Professor): void {
@@ -27,14 +43,12 @@ export function saveProfessor(professor: Professor): void {
     emailStatus: "none",
   };
   list.push(saved);
-  localStorage.setItem(SAVED_KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event("saved-professors-changed"));
+  writeSaved(list);
 }
 
 export function unsaveProfessor(id: string): void {
   const list = getSavedProfessors().filter((p) => p.id !== id);
-  localStorage.setItem(SAVED_KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event("saved-professors-changed"));
+  writeSaved(list);
 }
 
 export function isProfessorSaved(id: string): boolean {
@@ -49,8 +63,7 @@ export function updateSavedProfessor(
   const idx = list.findIndex((p) => p.id === id);
   if (idx === -1) return;
   list[idx] = { ...list[idx], ...updates };
-  localStorage.setItem(SAVED_KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event("saved-professors-changed"));
+  writeSaved(list);
 }
 
 // --- Accepting Students Signals ---
