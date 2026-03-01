@@ -1,0 +1,589 @@
+# Landing Page Redesign - Implementation Plan
+
+> **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+
+**Goal:** Replace the minimal search-only landing page with a full showcase page that communicates all features (search, save/compare, email drafting, CSV export, 3D network explorer) to all academic audiences.
+
+**Architecture:** Rewrite `src/app/page.tsx` (server component) to contain five sections: Hero, Feature Grid, Feature Deep-Dives, Audience Grid, Footer. The SearchBar component stays unchanged. All new content is static JSX in the server component, no new client components needed. Add CSS-only abstract illustrations using Tailwind utilities and minimal custom CSS in globals.css. Also add a mesh background to the Explore Networks page via CSS.
+
+**Tech Stack:** Next.js 16 (App Router, server component), Tailwind CSS 4 with @theme inline tokens, existing design tokens (paper, ink, accent, etc.)
+
+**Layout note:** On desktop, use full viewport width for the navbar and section containers (wider max-widths). On mobile, keep the current compact layout. The navbar currently uses `max-w-[52rem]` which constrains it - widen to `max-w-6xl` on desktop. Feature sections use `max-w-5xl`.
+
+---
+
+### Task 0: Widen Navbar for Desktop
+
+**Files:**
+- Modify: `src/components/Navbar.tsx` (line 6)
+
+**Step 1: Widen the navbar max-width**
+
+In `src/components/Navbar.tsx`, change the container max-width from `max-w-[52rem]` to `max-w-6xl` so the navbar spreads wider on desktop while still being contained:
+
+Change line 6 from:
+```tsx
+      <div className="max-w-[52rem] mx-auto px-6 py-3 flex items-center justify-between">
+```
+to:
+```tsx
+      <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+```
+
+**Step 2: Run build to verify**
+
+Run: `npm run build`
+Expected: Build succeeds.
+
+**Step 3: Commit**
+
+```bash
+git add src/components/Navbar.tsx
+git commit -m "Widen navbar to use more horizontal space on desktop"
+```
+
+---
+
+### Task 1: Rewrite Hero Section
+
+**Files:**
+- Modify: `src/app/page.tsx` (full rewrite, lines 1-91)
+
+**Step 1: Rewrite page.tsx with the new hero section**
+
+Replace the entire `src/app/page.tsx` with the hero section first. Keep the existing `EXAMPLE_TOPICS` array and `SearchBar` import. The rest of the page sections will be added in subsequent tasks.
+
+```tsx
+import SearchBar from "@/components/SearchBar";
+import Link from "next/link";
+
+const EXAMPLE_TOPICS = [
+  "Computational Neuroscience",
+  "Machine Learning",
+  "Climate Change",
+  "Quantum Computing",
+  "Gene Therapy",
+  "Behavioral Economics",
+  "Robotics",
+  "Astrophysics",
+];
+
+export default function Home() {
+  return (
+    <main>
+      {/* Hero */}
+      <section className="py-16 sm:py-24">
+        <div className="max-w-2xl mx-auto px-6">
+          <p className="text-sm text-accent font-medium mb-3">
+            Search 240M+ academic works across every field and country.
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight mb-3">
+            Find the right researcher, faster.
+          </h1>
+          <p className="text-ink-secondary text-[0.95rem] leading-relaxed mb-8">
+            Search by topic, name, or institution. Save professors, draft
+            emails, compare candidates, and explore collaboration networks
+            &mdash; all in one place.
+          </p>
+
+          <SearchBar />
+
+          <p className="mt-6 text-sm text-ink-tertiary leading-relaxed">
+            Try:{" "}
+            {EXAMPLE_TOPICS.map((topic, i) => (
+              <span key={topic}>
+                {i > 0 && ", "}
+                <Link
+                  href={`/search?q=${encodeURIComponent(topic)}&type=topic`}
+                  className="text-link hover:text-link-hover transition-colors"
+                >
+                  {topic}
+                </Link>
+              </span>
+            ))}
+          </p>
+        </div>
+      </section>
+
+      {/* Placeholder for remaining sections */}
+
+      <footer className="border-t border-rule">
+        <div className="max-w-5xl mx-auto px-6 py-5 text-xs text-ink-tertiary text-center leading-relaxed">
+          Searching 240M+ academic works across all fields and countries.
+          <br />
+          Data from{" "}
+          <a
+            href="https://openalex.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-link hover:text-link-hover transition-colors"
+          >
+            OpenAlex
+          </a>{" "}
+          (CC0 license). Not affiliated with any university.
+        </div>
+      </footer>
+    </main>
+  );
+}
+```
+
+**Step 2: Run build to verify no errors**
+
+Run: `npm run build`
+Expected: Build succeeds, no TypeScript or JSX errors.
+
+**Step 3: Commit**
+
+```bash
+git add src/app/page.tsx
+git commit -m "Rewrite landing page hero with broader headline and feature subtitle"
+```
+
+---
+
+### Task 2: Add Feature Grid Section (3 Columns)
+
+**Files:**
+- Modify: `src/app/page.tsx`
+
+**Step 1: Add the feature grid section after the hero**
+
+Insert this section between the hero `</section>` and the `{/* Placeholder */}` comment in `src/app/page.tsx`:
+
+```tsx
+      {/* Feature Grid */}
+      <section className="border-t border-rule py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-12">
+            {/* Search & Discover */}
+            <div>
+              <div className="w-9 h-9 rounded-lg bg-accent-bg flex items-center justify-center text-accent mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                  <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-ink mb-2">Search &amp; Discover</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Find professors by research topic, name, or institution. Filter
+                by country, citations, and sort by relevance.
+              </p>
+            </div>
+
+            {/* Save & Track */}
+            <div>
+              <div className="w-9 h-9 rounded-lg bg-accent-bg flex items-center justify-center text-accent mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                  <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-ink mb-2">Save &amp; Track</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Build your shortlist, add notes, track email status, compare up
+                to 4 professors side by side, and export to CSV.
+              </p>
+            </div>
+
+            {/* Explore Networks */}
+            <div>
+              <div className="w-9 h-9 rounded-lg bg-accent-bg flex items-center justify-center text-accent mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                  <path d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H4.598a.75.75 0 00-.75.75v3.634a.75.75 0 001.5 0v-2.033l.312.311a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.06-7.39a.75.75 0 00-1.5 0v2.033l-.312-.312a7 7 0 00-11.712 3.138.75.75 0 001.449.39A5.5 5.5 0 0113.889 6.11l.311.312H11.767a.75.75 0 000 1.5h3.634a.75.75 0 00.75-.75V3.538l.22.496z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-ink mb-2">Explore Networks</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Visualize collaboration graphs in 3D. See how researchers in a
+                field connect, expand nodes to discover new collaborators.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+```
+
+**Step 2: Run build to verify**
+
+Run: `npm run build`
+Expected: Build succeeds.
+
+**Step 3: Commit**
+
+```bash
+git add src/app/page.tsx
+git commit -m "Add 3-column feature grid section to landing page"
+```
+
+---
+
+### Task 3: Add Feature Deep-Dive Sections (4 Alternating)
+
+**Files:**
+- Modify: `src/app/page.tsx`
+- Modify: `src/app/globals.css` (add abstract illustration styles)
+
+**Step 1: Add CSS for abstract illustrations**
+
+Append to `src/app/globals.css` after the `.animate-slide-in` media query block:
+
+```css
+/* Abstract illustration shapes for landing page feature sections */
+.illustration-profiles {
+  background:
+    radial-gradient(circle at 30% 30%, var(--color-accent-bg) 0%, transparent 60%),
+    radial-gradient(circle at 70% 60%, var(--color-oa-bg) 0%, transparent 50%);
+}
+.illustration-save {
+  background:
+    linear-gradient(135deg, var(--color-accent-bg) 0%, transparent 40%),
+    linear-gradient(315deg, var(--color-gold-bg) 0%, transparent 40%);
+}
+.illustration-filter {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      var(--color-paper-elevated) 0px,
+      var(--color-paper-elevated) 8px,
+      transparent 8px,
+      transparent 16px
+    ),
+    linear-gradient(90deg, var(--color-accent-bg) 0%, transparent 100%);
+}
+.illustration-network {
+  background:
+    radial-gradient(circle at 20% 40%, var(--color-accent) 2px, transparent 2px),
+    radial-gradient(circle at 50% 25%, var(--color-oa) 3px, transparent 3px),
+    radial-gradient(circle at 75% 55%, var(--color-accent) 2px, transparent 2px),
+    radial-gradient(circle at 40% 70%, var(--color-gold-muted) 2px, transparent 2px),
+    radial-gradient(circle at 65% 80%, var(--color-accent) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 30% 50%, var(--color-oa) 1.5px, transparent 1.5px),
+    linear-gradient(var(--color-accent-bg) 0%, var(--color-paper) 100%);
+}
+```
+
+**Step 2: Add the four deep-dive sections to page.tsx**
+
+Insert after the Feature Grid `</section>` and before the `{/* Placeholder */}` comment:
+
+```tsx
+      {/* Deep-Dive: Professor Profiles */}
+      <section className="border-t border-rule py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
+            <div>
+              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+                Rich professor profiles
+              </h2>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Click any professor to see their research topics, publications
+                sorted by year, citation metrics, and frequent co-authors.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Direct links to Google Scholar, ORCID, and their lab page. Draft
+                a cold email in one click, or flag whether they&rsquo;re
+                currently accepting students.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Share any profile with a direct link.
+              </p>
+            </div>
+            <div className="illustration-profiles rounded-xl h-48 sm:h-56" aria-hidden="true" />
+          </div>
+        </div>
+      </section>
+
+      {/* Deep-Dive: Save, Compare & Export */}
+      <section className="border-t border-rule py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
+            <div className="illustration-save rounded-xl h-48 sm:h-56 order-last sm:order-first" aria-hidden="true" />
+            <div>
+              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+                Save, compare &amp; export
+              </h2>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Bookmark professors to your saved list. Add private notes and
+                track your outreach status for each one.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Compare up to four professors side by side with topic overlap
+                analysis to find the best fit.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Export any search results to CSV for offline tracking and
+                sharing.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Deep-Dive: Smart Filtering */}
+      <section className="border-t border-rule py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
+            <div>
+              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+                Smart filtering
+              </h2>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Narrow down results by country, minimum citations, or sort by
+                most cited or most published.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Multi-page export lets you download the top 100, 250, or 500
+                results at once.
+              </p>
+            </div>
+            <div className="illustration-filter rounded-xl h-48 sm:h-56" aria-hidden="true" />
+          </div>
+        </div>
+      </section>
+
+      {/* Deep-Dive: 3D Network Explorer */}
+      <section className="border-t border-rule py-16 sm:py-20 bg-accent-bg/40">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center">
+            <div className="illustration-network rounded-xl h-48 sm:h-56 order-last sm:order-first" aria-hidden="true" />
+            <div>
+              <h2 className="text-xl font-bold text-ink tracking-tight mb-3">
+                3D network explorer
+              </h2>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-3">
+                Visualize how the top researchers in any field collaborate.
+                Search a topic to see the network, or search an author to map
+                their co-author connections.
+              </p>
+              <p className="text-sm text-ink-secondary leading-relaxed mb-4">
+                Click any node to expand it, see their research areas, and
+                discover collaborators you might have missed.
+              </p>
+              <Link
+                href="/explore"
+                className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:text-accent-hover transition-colors"
+              >
+                Try the network explorer
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+```
+
+Also remove the `{/* Placeholder for remaining sections */}` comment.
+
+**Step 3: Run build to verify**
+
+Run: `npm run build`
+Expected: Build succeeds.
+
+**Step 4: Commit**
+
+```bash
+git add src/app/page.tsx src/app/globals.css
+git commit -m "Add 4 feature deep-dive sections with CSS-only illustrations"
+```
+
+---
+
+### Task 4: Add "Who It's For" Audience Grid
+
+**Files:**
+- Modify: `src/app/page.tsx`
+
+**Step 1: Add the audience section after the last deep-dive and before the footer**
+
+```tsx
+      {/* Who It's For */}
+      <section className="border-t border-rule py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <h2 className="text-[0.7rem] font-medium text-ink-tertiary uppercase tracking-widest mb-8">
+            Who it&rsquo;s for
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+            <div>
+              <h3 className="font-semibold text-accent mb-1">Students</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Find research assistantships, PhD advisors, or labs to join by
+                searching your area of interest.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-accent mb-1">Faculty</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Identify reviewers, panelists, or potential collaborators in a
+                specific research niche.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-accent mb-1">Researchers</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Audit your own collaboration network, discover adjacent
+                researchers, and explore how your field connects.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-accent mb-1">Organizers</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                Map who&rsquo;s actively publishing in a topic when planning
+                conferences, workshops, or special issues.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+```
+
+**Step 2: Run build to verify**
+
+Run: `npm run build`
+Expected: Build succeeds.
+
+**Step 3: Commit**
+
+```bash
+git add src/app/page.tsx
+git commit -m "Add audience grid section to landing page"
+```
+
+---
+
+### Task 5: Add 3D Mesh Background to Explore Page
+
+**Files:**
+- Modify: `src/app/globals.css`
+- Modify: `src/components/NetworkGraph.tsx` (line 47, line 102, line 113)
+
+**Step 1: Add mesh background CSS to globals.css**
+
+Append to `src/app/globals.css`:
+
+```css
+/* 3D mesh/grid background for explore page graph area */
+.mesh-background {
+  background-color: #F5F4F0;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(0, 0, 0, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.015) 1px, transparent 1px);
+  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+}
+```
+
+**Step 2: Update NetworkGraph to use mesh background**
+
+In `src/components/NetworkGraph.tsx`:
+
+1. Change line 47 from:
+```tsx
+const BG_COLOR = "#F5F4F0";
+```
+to:
+```tsx
+const BG_COLOR = "rgba(0,0,0,0)";
+```
+
+2. Change line 102 from:
+```tsx
+    <div ref={containerRef} className="w-full h-full overflow-hidden relative" style={{ backgroundColor: BG_COLOR }}>
+```
+to:
+```tsx
+    <div ref={containerRef} className="w-full h-full overflow-hidden relative mesh-background">
+```
+
+3. On the `ForceGraph3D` component (line 113), change `backgroundColor={BG_COLOR}` to:
+```tsx
+          backgroundColor="rgba(0,0,0,0)"
+```
+
+**Step 3: Run build to verify**
+
+Run: `npm run build`
+Expected: Build succeeds, no errors.
+
+**Step 4: Commit**
+
+```bash
+git add src/app/globals.css src/components/NetworkGraph.tsx
+git commit -m "Add subtle mesh grid background to explore page graph area"
+```
+
+---
+
+### Task 6: Update E2E Tests and Run Full Verification
+
+**Files:**
+- Modify: `e2e/smoke.spec.ts` (update homepage test)
+
+**Step 1: Update the homepage smoke test**
+
+The current test checks for `h1, h2` on the homepage. The new page has an `h1`, so it should still pass. But let's also add a check for one of the new sections to confirm the redesign renders:
+
+In `e2e/smoke.spec.ts`, replace the homepage test (lines 4-8):
+
+```ts
+  test("homepage loads with feature sections", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("h1")).toBeVisible();
+    await expect(page.locator("text=Search & Discover")).toBeVisible();
+    await expect(page.locator("text=Who it")).toBeVisible();
+    await expect(page.locator("text=Application error")).not.toBeVisible();
+  });
+```
+
+**Step 2: Run unit tests**
+
+Run: `npm test`
+Expected: All tests pass (none of the unit tests reference `page.tsx` directly).
+
+**Step 3: Run build**
+
+Run: `npm run build`
+Expected: Build succeeds.
+
+**Step 4: Run E2E tests**
+
+Run: `npm run test:e2e`
+Expected: All tests pass, including the updated homepage test.
+
+**Step 5: Commit**
+
+```bash
+git add e2e/smoke.spec.ts
+git commit -m "Update E2E homepage test for redesigned landing page"
+```
+
+---
+
+### Task 7: Update Changelog
+
+**Files:**
+- Modify: `src/app/changelog/page.tsx`
+
+**Step 1: Add a v0.4.0 changelog entry**
+
+Add a new version entry at the top of the changelog entries in `src/app/changelog/page.tsx` documenting:
+- Redesigned landing page with feature showcase
+- Added "Who it's for" audience section
+- Added mesh background to Explore Networks page
+- Improved first-impression clarity of all features
+
+Follow the existing changelog format already in the file.
+
+**Step 2: Run build to verify**
+
+Run: `npm run build`
+Expected: Build succeeds.
+
+**Step 3: Commit**
+
+```bash
+git add src/app/changelog/page.tsx
+git commit -m "Add v0.4.0 changelog entry for landing page redesign"
+```
