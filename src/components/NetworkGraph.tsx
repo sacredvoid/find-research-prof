@@ -44,7 +44,7 @@ function getFieldColor(field: string): string {
   return color;
 }
 
-const BG_COLOR = "#F5F4F0";
+const BG_COLOR = "rgba(0,0,0,0)";
 
 interface NetworkGraphProps {
   graphData: GraphData;
@@ -99,7 +99,7 @@ export default function NetworkGraph({
   );
 
   return (
-    <div ref={containerRef} className="w-full h-full overflow-hidden relative" style={{ backgroundColor: BG_COLOR }}>
+    <div ref={containerRef} className="w-full h-full overflow-hidden relative mesh-background">
       {graphData.nodes.length === 0 ? (
         <div className="w-full h-full flex items-center justify-center text-ink-tertiary text-sm">
           Search for a topic or author to visualize their research network
@@ -110,7 +110,7 @@ export default function NetworkGraph({
           graphData={graphData}
           width={dimensions.width}
           height={dimensions.height}
-          backgroundColor={BG_COLOR}
+          backgroundColor="rgba(0,0,0,0)"
           nodeLabel={(node: object) => {
             const n = node as GraphNode;
             return `<div style="background: rgba(28,25,23,0.92); color: white; padding: 8px 12px; border-radius: 8px; font-size: 13px; max-width: 250px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
