@@ -237,22 +237,6 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-rule">
-        <div className="max-w-5xl mx-auto px-6 py-5 text-xs text-ink-tertiary text-center leading-relaxed">
-          Searching 240M+ academic works across all fields and countries.
-          <br />
-          Data from{" "}
-          <a
-            href="https://openalex.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-link hover:text-link-hover transition-colors"
-          >
-            OpenAlex
-          </a>{" "}
-          (CC0 license). Not affiliated with any university.
-        </div>
-      </footer>
     </main>
   );
 }

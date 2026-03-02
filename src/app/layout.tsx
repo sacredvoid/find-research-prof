@@ -102,6 +102,20 @@ export default function RootLayout({
       >
         <Navbar />
         {children}
+        <footer className="border-t border-rule mt-auto">
+          <div className="max-w-5xl mx-auto px-6 py-5 text-xs text-ink-tertiary text-center leading-relaxed">
+            Data from{" "}
+            <a
+              href="https://openalex.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-link hover:text-link-hover transition-colors"
+            >
+              OpenAlex
+            </a>
+            {" "}(240M+ academic works, CC0 license). Not affiliated with any university.
+          </div>
+        </footer>
         <Analytics />
       </body>
     </html>
