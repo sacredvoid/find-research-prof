@@ -1,4 +1,4 @@
-# ResearchProf — Find Professors Researching in Your Field
+# Only Research — Find Professors Researching in Your Field
 
 ## The Problem
 

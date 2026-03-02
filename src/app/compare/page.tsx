@@ -9,7 +9,19 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Compare Professors",
-  description: "Compare professors side by side — h-index, citations, publications, and research topics.",
+  description: "Compare professors side by side on Only Research. Analyze h-index, citation counts, publication volume, research topics, and find overlapping areas of expertise between up to four researchers.",
+  openGraph: {
+    title: "Compare Professors | Only Research",
+    description: "Side-by-side comparison of professors with h-index, citations, publications, and research topic overlap analysis.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Compare Professors | Only Research",
+    description: "Side-by-side comparison of professors with h-index, citations, publications, and research topic overlap analysis.",
+  },
+  alternates: {
+    canonical: "/compare",
+  },
 };
 
 export default async function ComparePage({

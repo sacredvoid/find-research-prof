@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://researchprof.com/sitemap.xml",
+    sitemap: "https://only-research.xyz/sitemap.xml",
   };
 }

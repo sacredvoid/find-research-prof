@@ -26,18 +26,18 @@ export async function generateMetadata({
 
   const label = type === "name" ? "professors named" : type === "institution" ? "professors at" : "professors researching";
   const title = `${query} — Find ${label} ${query}`;
-  const description = `Find ${label} "${query}". View their publications, citations, h-index, and collaboration networks on ResearchProf.`;
+  const description = `Find ${label} "${query}" on Only Research. View their publications, citations, h-index, collaboration networks, co-authors, and institution details. Compare professors side by side, save to your list, draft cold emails, and export results to CSV.`;
 
   return {
     title,
     description,
     openGraph: {
-      title: `${title} — ResearchProf`,
+      title: `${title} — Only Research`,
       description,
     },
     twitter: {
-      card: "summary",
-      title: `${title} — ResearchProf`,
+      card: "summary_large_image",
+      title: `${title} — Only Research`,
       description,
     },
     alternates: {

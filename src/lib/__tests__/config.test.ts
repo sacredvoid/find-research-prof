@@ -15,7 +15,7 @@ describe("config constants", () => {
   });
 
   it("has a site name", () => {
-    expect(SITE_NAME).toBe("ResearchProf");
+    expect(SITE_NAME).toBe("Only Research");
   });
 
   it("has reasonable page sizes", () => {

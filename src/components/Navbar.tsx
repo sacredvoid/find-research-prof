@@ -27,7 +27,7 @@ export default function Navbar() {
             <circle cx="10" cy="18" r="2.5" fill="currentColor" />
             <circle cx="20" cy="16" r="2" fill="currentColor" opacity="0.6" />
           </svg>
-          ResearchProf
+          Only Research
         </Link>
         <div className="flex items-center gap-3 sm:gap-4">
           <Link

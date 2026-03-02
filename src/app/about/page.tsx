@@ -1,25 +1,77 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { safeJsonLd } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "ResearchProf helps students find PhD advisors, faculty find reviewers, and researchers map collaboration networks. Built on OpenAlex data covering 240M+ academic works.",
+    "Only Research helps students find PhD advisors, faculty find reviewers, and researchers map collaboration networks. Search by topic, name, or institution across 240M+ academic works from OpenAlex. Save professors, compare candidates, and draft cold emails, all in one place.",
   openGraph: {
-    title: "About — ResearchProf",
+    title: "About | Only Research",
     description:
-      "ResearchProf helps students find PhD advisors, faculty find reviewers, and researchers map collaboration networks.",
+      "Only Research helps students find PhD advisors, faculty find reviewers, and researchers map collaboration networks. Search by topic, name, or institution across 240M+ academic works.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About | Only Research",
+    description:
+      "Only Research helps students find PhD advisors, faculty find reviewers, and researchers map collaboration networks. Search by topic, name, or institution across 240M+ academic works.",
   },
   alternates: {
     canonical: "/about",
   },
 };
 
+const faqData = [
+  {
+    question: "How do I find a PhD advisor?",
+    answer:
+      "Use the topic search to find professors actively publishing in your field of interest. Review their recent publications, citation metrics, and h-index to gauge their research activity. Once you find a good match, use the built-in email draft feature to compose a personalized cold email referencing their latest work.",
+  },
+  {
+    question: "How do I cold email a professor for research?",
+    answer:
+      "Start by visiting a professor's profile on Only Research to understand their current research topics and recent publications. Then use the built-in email generator, which creates a personalized draft based on the professor's actual work. This helps you write a targeted message that references specific papers and research areas rather than sending a generic template.",
+  },
+  {
+    question: "How do I compare research professors?",
+    answer:
+      "Save professors to your My List by clicking the bookmark icon on any professor card or profile page. Once you have at least two professors saved, click the Compare button to see them side by side. The comparison view shows h-index, citation counts, publication volume, 2-year mean citedness, research topics, and highlights overlapping areas of expertise.",
+  },
+  {
+    question: "What data does Only Research use?",
+    answer:
+      "Only Research is powered by OpenAlex, a free and open catalog of more than 240 million academic works, authors, and institutions. All data is licensed under CC0 (public domain), meaning it is freely available with no restrictions. The data includes publications, citations, co-author relationships, institutional affiliations, and research topic classifications.",
+  },
+  {
+    question: "Is Only Research free to use?",
+    answer:
+      "Yes, Only Research is completely free to use. There is no sign-up required, no account needed, and no premium tier. All features including search, professor profiles, saving to your list, comparing professors, and exporting to CSV are available at no cost.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqData.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
+
 export default function AboutPage() {
   return (
     <main className="max-w-4xl mx-auto px-6 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
+      />
       <h1 className="text-2xl font-bold text-ink tracking-tight mb-2">
-        About ResearchProf
+        About Only Research
       </h1>
       <p className="text-accent font-medium text-sm mb-6">
         For students, researchers, and academics navigating the world of
@@ -35,7 +87,7 @@ export default function AboutPage() {
           ranked by their work.
         </p>
         <p>
-          ResearchProf is my attempt at fixing that. One search box, one place
+          Only Research is my attempt at fixing that. One search box, one place
           to find professors by what they research — with their papers,
           citations, and links to reach them. Whether you&rsquo;re cold-emailing
           for an RA position, shortlisting PhD advisors, or just exploring
@@ -183,8 +235,26 @@ export default function AboutPage() {
           >
             CC0
           </a>
-          . ResearchProf is not affiliated with any university or institution.
+          . Only Research is not affiliated with any university or institution.
         </p>
+      </section>
+
+      <hr className="border-rule my-8" />
+
+      <section className="mb-8">
+        <h2 className="text-[0.7rem] font-medium text-ink-tertiary uppercase tracking-widest mb-4">
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-5">
+          {faqData.map((item) => (
+            <div key={item.question}>
+              <h3 className="font-medium text-ink mb-1">{item.question}</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                {item.answer}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <hr className="border-rule my-8" />

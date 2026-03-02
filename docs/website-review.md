@@ -1,4 +1,4 @@
-# ResearchProf — Comprehensive Website Review
+# Only Research — Comprehensive Website Review
 
 **Date**: 2026-02-28
 **Scope**: Product, Engineering, Security, Performance
@@ -18,7 +18,7 @@
 
 ## Executive Summary
 
-ResearchProf is a well-executed MVP — a Next.js 16 website that helps students and researchers discover professors by research topic using OpenAlex data. The architecture is lean (no backend, direct API calls), the UX is clean, and the 3D network explorer is a strong differentiator.
+Only Research is a well-executed MVP — a Next.js 16 website that helps students and researchers discover professors by research topic using OpenAlex data. The architecture is lean (no backend, direct API calls), the UX is clean, and the 3D network explorer is a strong differentiator.
 
 However, the codebase has meaningful gaps in **error resilience**, **scalability**, **security hardening**, and **product completeness** that need to be addressed before growth. This document catalogs every issue found and provides a prioritized roadmap.
 
@@ -218,7 +218,7 @@ return `<div>...<div style="font-weight: 600;">${n.name}</div>...`;
 **Severity: LOW**
 **Locations:** `src/lib/openalex.ts:4`, `src/lib/graph.ts:4`, `src/components/ExplorePageClient.tsx:29`
 
-**Details:** `researchprof@example.com` is hardcoded in three places. This isn't a secret, but it should be an environment variable for configuration management.
+**Details:** `contact@only-research.xyz` is hardcoded in three places. This isn't a secret, but it should be an environment variable for configuration management.
 
 #### SEC-8: No Input Length Limits
 

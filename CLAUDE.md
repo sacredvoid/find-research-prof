@@ -1,4 +1,4 @@
-# ResearchProf - Project Instructions
+# Only Research - Project Instructions
 
 ## Overview
 Next.js 16 app (App Router) for searching academic professors via OpenAlex API. Deployed on Vercel.

@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "ResearchProf — Find Professors by Research Topic",
-    template: "%s — ResearchProf",
+    default: "Only Research - Find Professors by Research Topic",
+    template: "%s | Only Research",
   },
   description: SITE_DESCRIPTION,
   keywords: [
@@ -44,12 +44,12 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "ResearchProf — Find Professors by Research Topic",
+    title: "Only Research - Find Professors by Research Topic",
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: "ResearchProf — Find Professors by Research Topic",
+    title: "Only Research - Find Professors by Research Topic",
     description: SITE_DESCRIPTION,
   },
   robots: {
@@ -73,7 +73,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const jsonLd = {
+  const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: SITE_NAME,
@@ -89,12 +89,26 @@ export default function RootLayout({
     },
   };
 
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Only Research",
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
+    sameAs: [],
+  };
+
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://api.openalex.org" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(organizationJsonLd) }}
         />
       </head>
       <body

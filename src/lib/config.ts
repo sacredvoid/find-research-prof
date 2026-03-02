@@ -1,7 +1,7 @@
 export const OPENALEX_BASE_URL = "https://api.openalex.org";
-export const OPENALEX_MAILTO = process.env.NEXT_PUBLIC_OPENALEX_MAILTO || "researchprof@example.com";
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://researchprof.com";
-export const SITE_NAME = "ResearchProf";
+export const OPENALEX_MAILTO = process.env.NEXT_PUBLIC_OPENALEX_MAILTO || "contact@only-research.xyz";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://only-research.xyz";
+export const SITE_NAME = "Only Research";
 export const SITE_DESCRIPTION =
   "Search any research topic and instantly find professors working in that field. View their papers, citations, h-index, collaboration networks, and direct links — all in one place.";
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Changelog",
-  description: "Latest updates and improvements to ResearchProf.",
+  description: "Latest updates and improvements to Only Research.",
 };
 
 interface ChangelogEntry {
@@ -13,6 +13,20 @@ interface ChangelogEntry {
 }
 
 const CHANGELOG: ChangelogEntry[] = [
+  {
+    date: "2026-03-02",
+    version: "0.5.0",
+    changes: [
+      { type: "added", text: "Rebranded from ResearchProf to Only Research (only-research.xyz)" },
+      { type: "added", text: "Dynamic OpenGraph images for the site and individual professor profiles" },
+      { type: "added", text: "Dynamic sitemap with 200+ top professor pages and 30 popular topic pages for search engine discovery" },
+      { type: "added", text: "FAQ section on the About page with structured data for AI engine optimization" },
+      { type: "added", text: "Organization and BreadcrumbList structured data (JSON-LD) across all pages" },
+      { type: "improved", text: "Expanded meta descriptions across all pages for better search engine and AI extraction" },
+      { type: "improved", text: "Enhanced professor page structured data with all research topics and worksFor schema" },
+      { type: "improved", text: "Full metadata coverage on Compare and My List pages" },
+    ],
+  },
   {
     date: "2026-03-01",
     version: "0.4.0",
@@ -98,7 +112,7 @@ export default function ChangelogPage() {
       <div className="mb-10">
         <h1 className="text-2xl font-bold text-ink tracking-tight mb-2">Changelog</h1>
         <p className="text-ink-secondary text-sm">
-          What&rsquo;s new and improved in ResearchProf.
+          What&rsquo;s new and improved in Only Research.
         </p>
       </div>
 

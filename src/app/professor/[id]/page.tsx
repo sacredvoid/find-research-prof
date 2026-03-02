@@ -20,19 +20,19 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const institution = author.last_known_institutions?.[0]?.display_name || "";
     const topTopics = (author.topics || []).slice(0, 3).map((t) => t.display_name).join(", ");
     const title = `${author.display_name}`;
-    const description = `${author.display_name} at ${institution}. ${author.works_count} publications, ${formatNumber(author.cited_by_count)} citations, h-index ${author.summary_stats?.h_index}.${topTopics ? ` Research areas: ${topTopics}.` : ""}`;
+    const description = `${author.display_name} at ${institution}. ${author.works_count} publications, ${formatNumber(author.cited_by_count)} citations, h-index ${author.summary_stats?.h_index}.${topTopics ? ` Research areas: ${topTopics}.` : ""} View their full publication list, co-author network, and citation metrics on Only Research.`;
 
     return {
       title,
       description,
       openGraph: {
-        title: `${title} — ResearchProf`,
+        title: `${title} | Only Research`,
         description,
         type: "profile",
       },
       twitter: {
-        card: "summary",
-        title: `${title} — ResearchProf`,
+        card: "summary_large_image",
+        title: `${title} | Only Research`,
         description,
       },
       alternates: {
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       },
     };
   } catch {
-    return { title: "Professor — ResearchProf" };
+    return { title: "Professor | Only Research" };
   }
 }
 
@@ -93,11 +93,34 @@ export default async function ProfessorPage({
         "@type": "Organization",
         name: institution.display_name,
       },
+      worksFor: {
+        "@type": "Organization",
+        name: institution.display_name,
+      },
     }),
     ...(orcidUrl && { sameAs: [orcidUrl] }),
     ...(topics.length > 0 && {
-      knowsAbout: topics.slice(0, 5).map((t) => t.display_name),
+      knowsAbout: topics.map((t) => t.display_name),
     }),
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: author.display_name,
+        item: `${SITE_URL}/professor/${id}`,
+      },
+    ],
   };
 
   function buildPubUrl(overrides: Record<string, string>) {
@@ -114,6 +137,10 @@ export default async function ProfessorPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(personJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       {/* Header */}
       <header className="mb-8">
@@ -141,7 +168,7 @@ export default async function ProfessorPage({
             />
             <ShareButtons
               url={`/professor/${id}`}
-              title={`${author.display_name} — ResearchProf`}
+              title={`${author.display_name} | Only Research`}
             />
           </div>
         </div>

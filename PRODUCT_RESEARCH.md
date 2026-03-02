@@ -1,4 +1,4 @@
-# Product Improvement Research: ResearchProf
+# Product Improvement Research: Only Research
 
 ## Research Summary
 
@@ -121,7 +121,7 @@ Analysis of pain points from r/gradadmissions (333k members), r/GradSchool (924k
 
 ## Competitive Landscape
 
-| Feature | Google Scholar | ResearchGate | ResearchProf |
+| Feature | Google Scholar | ResearchGate | Only Research |
 |---------|--------------|--------------|-------------|
 | Search by topic → professors | No (paper-first) | Partial | Yes |
 | Collaboration network viz | No | No | Yes (3D graph) |
