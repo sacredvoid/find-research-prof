@@ -198,6 +198,13 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Tagline */}
+      <section className="border-t border-rule py-8">
+        <p className="text-center text-sm italic text-ink-tertiary">
+          &ldquo;The search engine your university should&rsquo;ve built.&rdquo;
+        </p>
+      </section>
+
       {/* Who It's For */}
       <section className="border-t border-rule py-12 sm:py-16">
         <div className="max-w-5xl mx-auto px-6">
