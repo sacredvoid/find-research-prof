@@ -1,0 +1,37 @@
+[
+  {
+    "id": "01-homepage",
+    "caption": "Search by topic, name, or institution",
+    "file": "01-homepage.png"
+  },
+  {
+    "id": "02-search-typing",
+    "caption": "Type any research topic to find experts",
+    "file": "02-search-typing.png"
+  },
+  {
+    "id": "03-search-results",
+    "caption": "Browse professors with citation metrics and filters",
+    "file": "03-search-results.png"
+  },
+  {
+    "id": "04-save-professor",
+    "caption": "Save professors to your shortlist with one click",
+    "file": "04-save-professor.png"
+  },
+  {
+    "id": "05-professor-profile",
+    "caption": "See publications, topics, co-authors, and more",
+    "file": "05-professor-profile.png"
+  },
+  {
+    "id": "06-email-generator",
+    "caption": "Draft a personalized cold email in one click",
+    "file": "06-email-generator.png"
+  },
+  {
+    "id": "07-my-list",
+    "caption": "Track outreach, add notes, and manage your list",
+    "file": "07-my-list.png"
+  }
+]
