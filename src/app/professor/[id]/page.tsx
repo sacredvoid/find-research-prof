@@ -3,6 +3,11 @@ import { OpenAlexAuthor, OpenAlexWork } from "@/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+
+// Cache professor pages at the CDN for 1 hour, then revalidate in the background.
+// This means repeat visits to the same professor serve instantly from cache
+// instead of invoking a serverless function each time.
+export const revalidate = 3600;
 import PublicationFilters from "@/components/PublicationFilters";
 import MetricBadge from "@/components/MetricBadge";
 import SectionHeading from "@/components/SectionHeading";
