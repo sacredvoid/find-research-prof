@@ -5,7 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        allow: ["/", "/about", "/changelog", "/demo"],
+        disallow: ["/professor/", "/search"],
       },
     ],
     sitemap: "https://only-research.xyz/sitemap.xml",
